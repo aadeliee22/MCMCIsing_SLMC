@@ -150,12 +150,12 @@ int main()
 		size = 16 * (1 + s);
 		vector < vector <double> > near(size * size, vector<double>(4, 0));
 		neighbor(near, size);
-		for (int k = 15; k < 36; k++) {
-			for (int h = 0; h < 10; h++) {
-				MC_1cycle(size, 0.1 * k, Mag, mag_sus, Mag2, Mag4, near);
-				File << size << " " << 0.1 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+		for (int k = 75; k < 151; k++) {
+			for (int h = 0; h < 5; h++) {
+				MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
+				File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
 			}
-			cout << 0.1 * k << "K end! ";
+			cout << 0.1 * k << "K end" << endl;
 		}
 		cout << "size: " << size << " finished :)" << endl;
 	}
