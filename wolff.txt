@@ -1,3 +1,11 @@
+// MCM(newman) p.354, p. 437
+/*
+1. Choose a seed spin at random from the lattice.
+2. Look in turn at each of the neighbours of that spin. If they are pointing in the same direction as the seed spin, add them to the cluster with probability P_add = 1-e^(-2*beta*J)
+3. For each spin that was added in step 2, examine each of its neighbours to find the ones which are pointing in the same direction, and same procedure of step 2. This step is repeated as many times as necessary until no spin left in cluster whose neighbours have not been considered. 
+4. Flip the cluster.
+*/
+
 /* padd = 1 - exp(-2*beta*J)
    s[] = lattixe of spins with helical boundary conditions
    L = constant edge length of lattice */
