@@ -1,0 +1,4 @@
+C:\Users\User\Desktop\MCM\1st-isingmodel\Debug\1st-isingmodel.exe
+C:\Users\User\Desktop\MCM\1st-isingmodel\Debug\1st-isingmodel.pdb
+C:\Users\User\Dropbox\MCM\1st-isingmodel\Debug\1st-isingmodel.exe
+C:\Users\User\Dropbox\MCM\1st-isingmodel\Debug\1st-isingmodel.pdb
