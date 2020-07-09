@@ -1,0 +1,58 @@
+/* padd = 1 - exp(-2*beta*J)
+   s[] = lattixe of spins with helical boundary conditions
+   L = constant edge length of lattice */
+
+#define N(L*L)
+#define XNN 1
+#define YNN L
+
+int s[N]; double padd;
+
+void step()
+{
+	int i;
+	int sp;
+	int oldspin, newspin;
+	int current, nn;
+	int stack[N];
+
+/* Choose the seed spin for the cluster, put it on the stack, and flip it */
+
+	i = N*drandom();
+	stack[0]=i;
+	sp=1;
+	oldspin=s[i];
+	newspin=-s[i];
+	s[i]=newspin;
+
+	while(sp){  /* pull a site off the stack */
+		current = stack[--sp];
+		    /* check the neighbours */
+		if ((nn=current + XNN>=N) nn-=N;
+		if (s[nn]==oldspin)
+			if (drandom()<padd){
+				stack[sp++]=nn;
+				s[nn]=newspin;
+			}
+		if((nn=current - XNN)<0) nn+=N;
+		if(s[nn]==oldspin)
+			if (drandom()<padd){
+				stack[sp++]=nn;
+				s[nn]=newspin;
+			}
+		if ((nn=current+YNN)>=N) nn -=N;
+		if (s[nn]=oldspin) 
+			if (drandom()<padd){
+				stack[sp++]=nn;
+				s[nn]=newspin;
+			}
+		if((nn=current-YNN)<0) nn+=N;
+		if(s[nn]==oldspin)
+			if(drandom()<padd){
+				stack[sp++]=nn;
+				s[nn]=newspin;
+			}
+	}
+}
+
+//This is made of C, so drandom() is just double random function.		
