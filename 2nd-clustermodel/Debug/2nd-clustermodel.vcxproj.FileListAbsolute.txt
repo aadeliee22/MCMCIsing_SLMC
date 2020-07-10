@@ -1,0 +1,2 @@
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\Debug\2nd-clustermodel.exe
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\Debug\2nd-clustermodel.pdb
