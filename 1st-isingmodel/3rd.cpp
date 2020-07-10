@@ -1,4 +1,4 @@
-/*#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <cmath>
 #include <random>
@@ -133,7 +133,7 @@ void MC_1cycle(int size, double T, double& mag, double& ene, double& mag_sus, do
 }
 void MC_1cycle_graphing(int size, double T, vector < vector <double> >& na)
 {
-	int step1 = 1000, step2 = 10000;
+	int step1 = 1000, step2 = 2000;
 	int trash_step = 20;
 	double expE[2] = { exp(-8 / T), exp(-4 / T) };
 	vector<double> array(size * size, 0);
@@ -179,25 +179,25 @@ int main()
 	double temperature;
 
 	cout << "Size: "; cin >> size;
-	//cout << "Temperature: "; cin >> temperature;
+	cout << "Temperature: "; cin >> temperature;
 
 	vector < vector <double> > near(size * size, vector<double>(4, 0));
 	neighbor(near, size);
 
-	double Mag = 0, Ene = 0, mag_sus = 0, sp_heat = 0;
-	ofstream File;
-	File.open("ising.txt");
+	/*double mag = 0, ene = 0, mag_sus = 0, sp_heat = 0;
+	ofstream file;
+	file.open("ising.txt");
 	for (int k = 1; k < 51; k++) {
 		for (int h = 0; h < 10; h++) {
-			MC_1cycle(size, 0.1 * k, Mag, Ene, mag_sus, sp_heat, near);
-			cout << 0.1 * k << " " << Mag << " " << Ene << " " << mag_sus << " " << sp_heat << " " << endl;
+			mc_1cycle(size, 0.1 * k, mag, ene, mag_sus, sp_heat, near);
+			cout << 0.1 * k << " " << mag << " " << ene << " " << mag_sus << " " << sp_heat << " " << endl;
 		}
 		cout << 0.1 * k << " finished" << endl;
 	}
-	File.close();
+	file.close();*/
 
-	//MC_1cycle_graphing(size, temperature, near);
+	MC_1cycle_graphing(size, temperature, near);
 
 	cout << endl << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
 	return 0;
-}*/
+}

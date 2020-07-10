@@ -65,12 +65,14 @@ void Cluster_1step(vector<double>& v, int size, double padd, vector < vector <do
 	double newspin = -v[i];
 	v[i] = newspin;
 	for (int sp = 0; sp < size * size; sp++) {
-		if (sp < stack.size()) { break; }
-		i = stack.at(sp);
-		if (v[na[i][0]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
-		if (v[na[i][1]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
-		if (v[na[i][2]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
-		if (v[na[i][3]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
+		try {
+			if (v[na[i][0]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
+			if (v[na[i][1]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
+			if (v[na[i][2]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
+			if (v[na[i][3]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
+			i = stack.at(sp+1);
+		}
+		catch (out_of_range) { break; }
 	}
 	/*int sp = 1;
 	while (sp!=0) {
@@ -120,8 +122,8 @@ void MC_1cycle(int size, double T, double& mag, double& ene, double& mag_sus, do
 }
 void MC_1cycle_graphing(int size, double T, vector < vector <double> >& na)
 {
-	int step1 = 2000, step2 = 10000;
-	int trash_step = 5;
+	int step1 = 2000, step2 = 2000;
+	int trash_step = 2;
 	if (T > 2.0 && T < 2.5) trash_step = 10;
 	double padd = 1 - exp(-2 / T);
 	vector<double> array(size * size, 0);
