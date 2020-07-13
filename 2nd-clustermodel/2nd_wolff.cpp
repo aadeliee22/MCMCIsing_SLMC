@@ -64,31 +64,32 @@ void Cluster_1step(vector<double>& v, int size, double padd, vector < vector <do
 	double oldspin = v[i];
 	double newspin = -v[i];
 	v[i] = newspin;
-	for (int sp = 0; sp < size * size; sp++) {
-		try {
-			if (v[na[i][0]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
-			if (v[na[i][1]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
-			if (v[na[i][2]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
-			if (v[na[i][3]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
-			i = stack.at(sp+1);
-		}
-		catch (out_of_range) { break; }
+	int sp = 0;
+	while (1) {
+		if (v[na[i][0]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
+		if (v[na[i][1]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
+		if (v[na[i][2]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
+		if (v[na[i][3]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
+		sp++;
+		if (sp >= stack.size()) break;
+		i = stack.at(sp);
 	}
-	/*int sp = 1;
-	while (sp!=0) {
-		int j = stack[--sp];
-		if (v[na[j][0]] == oldspin) { if (dis(gen) < padd) { stack.push_back(na[j][0]); v[na[j][0]] = newspin; sp++; } }
-		if (v[na[j][1]] == oldspin) { if (dis(gen) < padd) { stack.push_back(na[j][1]); v[na[j][1]] = newspin; sp++; } }
-		if (v[na[j][2]] == oldspin) { if (dis(gen) < padd) { stack.push_back(na[j][2]); v[na[j][2]] = newspin; sp++; } }	
-		if (v[na[j][3]] == oldspin) { if (dis(gen) < padd) { stack.push_back(na[j][3]); v[na[j][3]] = newspin; sp++; } }
-	}*/
 	
 }
-void MC_1cycle(int size, double T, double& mag, double& ene, double& mag_sus, double& sp_heat, vector < vector <double> >& na)
+void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, double& mag4, vector < vector <double> >& na)
 {
 	int step1 = 2000, step2 = 10000;
-	int trash_step = int(size/5);
-	if (T > 2.0 && T < 2.5) trash_step = trash_step*2;
+	int scale;
+	if (T <= 2) scale = 1;
+	if (T > 2 && T <= 2.6) scale = int(size * size / 40);
+	if (T > 2.6 && T <= 3.2) scale = int(size * size / 10);
+	if (T > 3.2 && T <= 3.8) scale = int(size * size / 5);
+	if (T > 3.8 && T <= 4.4) scale = int(size * size / 4);
+	if (T > 4.4) scale = int(size * size / 2);
+	step1 = step1 * scale; step2 = step2 * scale;
+
+	int trash_step = int(size / 4);
+	if (T > 2.0 && T <= 2.5) trash_step = trash_step * 2;
 
 	double padd = 1 - exp(-2 / T);
 	vector<double> array(size * size, 0);
@@ -97,102 +98,80 @@ void MC_1cycle(int size, double T, double& mag, double& ene, double& mag_sus, do
 	for (int k = 0; k < step1; k++) { Cluster_1step(array, size, padd, na); }
 
 	vector<double> magnet(step2, 0);
-	vector<double> energy(step2, 0);
 	for (int k = 0; k < step2; k++) {
 		for (int h = 0; h < trash_step; h++) {
 			Cluster_1step(array, size, padd, na);
 		}
 		magnet.at(k) = Magnet(array, size);
-		energy.at(k) = Energy(array, size, na);
 	}
 
-	double Mag = 0, Mag2 = 0, Ene = 0, Ene2 = 0;
+	double Mag = 0, Mag2 = 0, Mag4 = 0;
 	for (vector<int>::size_type i = 0; i < magnet.size(); i++) {
 		Mag = Mag + magnet.at(i);
 		Mag2 = Mag2 + pow(magnet.at(i), 2);
-		Ene = Ene + energy.at(i);
-		Ene2 = Ene2 + pow(energy.at(i), 2);
+		Mag4 = Mag4 + pow(magnet.at(i), 4);
 	}
 
 	mag = Mag / step2;
-	ene = Ene / step2;
 	mag_sus = pow(size, 2) * (Mag2 / step2 - pow(Mag / step2, 2)) / T;
-	sp_heat = (Ene2 / step2 - pow(Ene / step2, 2)) / pow(size * T, 2);
-	//return Mag, Ene, mag_sus, sp_heat;
+	mag2 = Mag2 / step2;
+	mag4 = Mag4 / step2;
 }
-void MC_1cycle_graphing(int size, double T, vector < vector <double> >& na)
-{
-	int step1 = 2000, step2 = 2000;
-	int trash_step = 2;
-	if (T > 2.0 && T < 2.5) trash_step = 10;
-	double padd = 1 - exp(-2 / T);
-	vector<double> array(size * size, 0);
-
-	initialize(array, size);
-	cout << "Initial state: " << endl;
-	color(array, size);
-	cout << endl;
-
-	for (int k = 0; k < step1; k++) { Cluster_1step(array, size, padd, na); }
-
-	vector<double> magnet(step2, 0);
-	vector<double> energy(step2, 0);
-	for (int k = 0; k < step2; k++) {
-		for (int h = 0; h < trash_step; h++) {
-			Cluster_1step(array, size, padd, na);
-		}
-		magnet.at(k) = Magnet(array, size);
-		energy.at(k) = Energy(array, size, na);
-	}
-
-	double Mag = 0, Mag2 = 0, Ene = 0, Ene2 = 0;
-	for (vector<int>::size_type i = 0; i < magnet.size(); i++) {
-		Mag = Mag + magnet.at(i);
-		Mag2 = Mag2 + pow(magnet.at(i), 2);
-		Ene = Ene + energy.at(i);
-		Ene2 = Ene2 + pow(energy.at(i), 2);
-	}
-
-	cout << "Final state with temperature " << T << " :" << endl;
-	color(array, size);
-	cout << endl;
-	cout << "Magnetization: " << Mag / step2 << endl;
-	cout << "Energy (H): " << Ene / step2 << endl;
-	cout << "Magnetic susceptibility: " << pow(size, 2) * (Mag2 / step2 - pow(Mag / step2, 2)) / T << endl;
-	cout << "Specific heat: " << (Ene2 / step2 - pow(Ene / step2, 2)) / pow(size * T, 2) << endl;
-}
-
 int main()
 {
 	int size;
 	double temperature;
-
-	//cout << "Size: "; cin >> size;
-	//cout << "Temperature: "; cin >> temperature;
+	double Mag = 0, mag_sus = 0, Mag2 = 0, Mag4 = 0;
 
 	clock_t start = clock();
 
-	double Mag = 0, Ene = 0, mag_sus = 0, sp_heat = 0;
 	ofstream File;
-	File.open("wolff.txt");
+	File.open("wolff_scale.txt");
 	cout << "File open '^'" << endl;
-	File << "size temperature mag energy mag_sus sp_heat" << endl;
-	for (int s = 0; s < 3; s++) {
-		size = 10 * (1 + s);
+	File << "size temperature m m^2 m^4 mag_sus" << endl;
+	for (int s = 0; s < 4; s++) {
+		size = 16 * (1 + s);
 		vector < vector <double> > near(size * size, vector<double>(4, 0));
 		neighbor(near, size);
-		for (int k = 75; k < 151; k++) {
+		for (int k = 1; k < 75; k++) { // 0.02~1.48
 			for (int h = 0; h < 5; h++) {
-				MC_1cycle(size, 0.02 * k, Mag, Ene, mag_sus, sp_heat, near);
-				File << size << " " << 0.02 * k << " " << Mag << " " << Ene << " " << mag_sus << " " << sp_heat << " " << endl;
+				MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
+				File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
 			}
-			cout << 0.02*k << "end"<<endl;
+			cout << 0.02 * k << "end" << endl;
+		}
+		for (int k = 150; k < 200; k++) { // 1.50~1.99
+			for (int h = 0; h < 5; h++) {
+				MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
+				File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+			}
+			cout << 0.01 * k << "end" << endl;
+		}
+		for (int k = 2000; k < 2500; k++) { // 2.000~2.499
+			for (int h = 0; h < 5; h++) {
+				MC_1cycle(size, 0.001 * k, Mag, mag_sus, Mag2, Mag4, near);
+				File << size << " " << 0.001 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+			}
+			cout << 0.001 * k << "end" << endl;
+		}
+		for (int k = 250; k < 300; k++) { // 2.50~2.99
+			for (int h = 0; h < 5; h++) {
+				MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
+				File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+			}
+			cout << 0.01 * k << "end" << endl;
+		}
+		for (int k = 150; k < 251; k++) { // 3.00~5.00
+			for (int h = 0; h < 5; h++) {
+				MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
+				File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+			}
+			cout << 0.02 * k << "end" << endl;
 		}
 		cout << "size: " << size << " finished :)" << endl;
 	}
 	File.close();
 
-	//MC_1cycle_graphing(size, temperature, near);
 
 	cout << endl << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
 	return 0;
