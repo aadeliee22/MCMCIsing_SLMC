@@ -25,9 +25,9 @@ void initialize(vector<double>& v, int size) //initial -random- state
 void color(vector<double>& v, int size) //graphing state
 {
 	for (int i = 0; i < size * size; i++) {
-		if (i % size == 0) cout << endl;
-		if (v[i] == 1) cout << "* ";
-		if (v[i] == -1) cout << ". ";
+		if (i % size == 0) std::cout << endl;
+		if (v[i] == 1) std::cout << "* ";
+		if (v[i] == -1) std::cout << ". ";
 	}
 }
 void neighbor(vector < vector <double> >& na, int size)
@@ -97,8 +97,17 @@ void Cluster_1step(vector<double>& v, int size, double padd, vector < vector <do
 void MC_1cycle(int size, double T, double& mag, double& ene, double& mag_sus, double& sp_heat, vector < vector <double> >& na)
 {
 	int step1 = 2000, step2 = 10000;
-	int trash_step = 5;
-	if (T > 2.0 && T < 2.5) trash_step = 10;
+	int scale; 
+	if (T <= 2) scale = 1;
+	if (T > 2 && T <= 2.6) scale = int(size / 40);
+	if (T > 2.6 && T <= 3.2) scale = int(size / 10);
+	if (T > 3.2 && T <= 3.8) scale = int(size / 5);
+	if (T > 3.8 && T <= 4.4) scale = int(size / 4);
+	if (T > 4.4) scale = int(size / 2);
+	step1 = step1 * scale; step2 = step2 * scale;
+
+	int trash_step = int(size / 4);
+	if (T > 2.0 && T <= 2.5) trash_step = trash_step * 2;
 
 	double padd = 1 - exp(-2 / T);
 	vector<double> array(size * size, 0);
@@ -133,15 +142,25 @@ void MC_1cycle(int size, double T, double& mag, double& ene, double& mag_sus, do
 void MC_1cycle_graphing(int size, double T, vector < vector <double> >& na)
 {
 	int step1 = 2000, step2 = 10000;
-	int trash_step = 2;
-	if (T > 2.0 && T < 2.5) trash_step = 4;
+	int scale;
+	if (T <= 2) scale = 1;
+	if (T > 2 && T <= 2.6) scale = int(size*size / 40);
+	if (T > 2.6 && T <= 3.2) scale = int(size * size / 10);
+	if (T > 3.2 && T <= 3.8) scale = int(size * size / 5);
+	if (T > 3.8 && T <= 4.4) scale = int(size * size / 4);
+	if (T > 4.4) scale = int(size * size / 2);
+	step1 = step1 * scale; step2 = step2 * scale;
+
+	int trash_step = int(size / 4);
+	if (T > 2.0 && T <= 2.5) trash_step = trash_step * 2;
+
 	double padd = 1 - exp(-2 / T);
 	vector<double> array(size * size, 0);
 
 	initialize(array, size);
-	cout << "Initial state: " << endl;
+	std::cout << "Initial state: " << endl;
 	color(array, size);
-	cout << endl;
+	std::cout << endl;
 
 	for (int k = 0; k < step1; k++) { Cluster_1step(array, size, padd, na); }
 
@@ -163,13 +182,13 @@ void MC_1cycle_graphing(int size, double T, vector < vector <double> >& na)
 		Ene2 = Ene2 + pow(energy.at(i), 2);
 	}
 
-	cout << "Final state with temperature " << T << " :" << endl;
+	std::cout << "Final state with temperature " << T << " :" << endl;
 	color(array, size);
-	cout << endl;
-	cout << "Magnetization: " << Mag / step2 << endl;
-	cout << "Energy (H): " << Ene / step2 << endl;
-	cout << "Magnetic susceptibility: " << pow(size, 2) * (Mag2 / step2 - pow(Mag / step2, 2)) / T << endl;
-	cout << "Specific heat: " << (Ene2 / step2 - pow(Ene / step2, 2)) / pow(size * T, 2) << endl;
+	std::cout << endl;
+	std::cout << "Magnetization: " << Mag / step2 << endl;
+	std::cout << "Energy (H): " << Ene / step2 << endl;
+	std::cout << "Magnetic susceptibility: " << pow(size, 2) * (Mag2 / step2 - pow(Mag / step2, 2)) / T << endl;
+	std::cout << "Specific heat: " << (Ene2 / step2 - pow(Ene / step2, 2)) / pow(size * T, 2) << endl;
 }
 
 int main()
