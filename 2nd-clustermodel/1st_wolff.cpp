@@ -143,12 +143,11 @@
 //{
 //	int step1 = 2000, step2 = 10000;
 //	int scale;
-//	if (T <= 2) scale = 1;
-//	if (T > 2 && T <= 2.6) scale = int(size*size / 40);
-//	if (T > 2.6 && T <= 3.2) scale = int(size * size / 10);
-//	if (T > 3.2 && T <= 3.8) scale = int(size * size / 5);
-//	if (T > 3.8 && T <= 4.4) scale = int(size * size / 4);
-//	if (T > 4.4) scale = int(size * size / 2);
+//	double slope = (double(size) * size / 2.8) / 2.7;
+//	if (T > 2.3) {
+//		scale = slope * (T - 2.3);
+//		if (scale == 0) scale = 1;
+//	}
 //	step1 = step1 * scale; step2 = step2 * scale;
 //
 //	int trash_step = int(size / 4);
@@ -196,7 +195,7 @@
 //	int size;
 //	double temperature;
 //
-//	cout << "Size: "; cin >> size;
+//	//cout << "Size: "; cin >> size;
 //	cout << "Temperature: "; cin >> temperature;
 //
 //	clock_t start = clock();

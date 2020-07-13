@@ -1,40 +1,21 @@
-﻿  2nd_scaling16.cpp
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(56,28): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+﻿  1st_wolff.cpp
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(56,28): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=double
           ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(56,42): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(56,42): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=double
           ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(62,8): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(69,16): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(62,8): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(87,16): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=double
           ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(69,75): warning C4244: '인수': '_Ty'에서 'const _Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-          with
-          [
-              _Ty=double
-          ]
-          and
-          [
-              _Ty=int
-          ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(69,88): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-          with
-          [
-              _Ty=double
-          ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(70,16): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-          with
-          [
-              _Ty=double
-          ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(70,75): warning C4244: '인수': '_Ty'에서 'const _Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(87,75): warning C4244: '인수': '_Ty'에서 'const _Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=double
@@ -43,36 +24,17 @@ C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(70,75): warni
           [
               _Ty=int
           ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(70,88): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(87,88): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=double
           ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(71,16): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(88,16): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=double
           ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(71,75): warning C4244: '인수': '_Ty'에서 'const _Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-          with
-          [
-              _Ty=double
-          ]
-          and
-          [
-              _Ty=int
-          ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(71,88): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-          with
-          [
-              _Ty=double
-          ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(72,16): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-          with
-          [
-              _Ty=double
-          ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(72,75): warning C4244: '인수': '_Ty'에서 'const _Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(88,75): warning C4244: '인수': '_Ty'에서 'const _Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=double
@@ -81,11 +43,51 @@ C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(72,75): warni
           [
               _Ty=int
           ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(72,88): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(88,88): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
           with
           [
               _Ty=double
           ]
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(74,10): warning C4018: '>=': signed 또는 unsigned가 일치하지 않습니다.
-C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\2nd_scaling16.cpp(123,9): warning C4101: 'temperature' :참조되지 않은 지역 변수입니다.
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(89,16): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+          with
+          [
+              _Ty=double
+          ]
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(89,75): warning C4244: '인수': '_Ty'에서 'const _Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+          with
+          [
+              _Ty=double
+          ]
+          and
+          [
+              _Ty=int
+          ]
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(89,88): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+          with
+          [
+              _Ty=double
+          ]
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(90,16): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+          with
+          [
+              _Ty=double
+          ]
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(90,75): warning C4244: '인수': '_Ty'에서 'const _Ty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+          with
+          [
+              _Ty=double
+          ]
+          and
+          [
+              _Ty=int
+          ]
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(90,88): warning C4244: '인수': '_Ty'에서 'const unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+          with
+          [
+              _Ty=double
+          ]
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(92,10): warning C4018: '>=': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\1st_wolff.cpp(148,17): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  4th_scaling16.cpp
+  코드를 생성하고 있습니다...
   2nd-clustermodel.vcxproj -> C:\Users\User\Desktop\mygit\MCM\2nd-clustermodel\Debug\2nd-clustermodel.exe
