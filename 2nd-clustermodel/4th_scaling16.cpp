@@ -80,12 +80,11 @@ void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, d
 {
 	int step1 = 2000, step2 = 10000;
 	int scale;
-	if (T <= 2) scale = 1;
-	if (T > 2 && T <= 2.6) scale = int(size * size / 40);
-	if (T > 2.6 && T <= 3.2) scale = int(size * size / 10);
-	if (T > 3.2 && T <= 3.8) scale = int(size * size / 5);
-	if (T > 3.8 && T <= 4.4) scale = int(size * size / 4);
-	if (T > 4.4) scale = int(size * size / 2);
+	double slope = (double(size)*size/2.8)/2.7;
+	if (T>2.3) {
+		scale = slope * (T - 2.3);
+		if (scale == 0) scale = 1;
+	}
 	step1 = step1 * scale; step2 = step2 * scale;
 
 	int trash_step = int(size / 4);
@@ -127,7 +126,7 @@ int main()
 
 	ofstream File;
 	File.open("wolff_scale.txt");
-	cout << "File open '^'" << endl;
+	cout << "File open: " << endl;
 	File << "size temperature m m^2 m^4 mag_sus" << endl;
 	for (int s = 0; s < 4; s++) {
 		size = 16 * (1 + s);
