@@ -79,16 +79,16 @@ void Cluster_1step(vector<double>& v, int size, double padd, vector < vector <do
 void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, double& mag4, vector < vector <double> >& na)
 {
 	int step1 = 2000, step2 = 10000;
-	int scale;
-	double slope = (double(size)*size/2.8)/2.7;
+	int scale=1;
+	double slope = (double(size)*size/3.0)/2.7;
 	if (T>2.3) {
 		scale = slope * (T - 2.3);
 		if (scale == 0) scale = 1;
 	}
 	step1 = step1 * scale; step2 = step2 * scale;
 
-	int trash_step = int(size / 4);
-	if (T > 2.0 && T <= 2.5) trash_step = trash_step * 2;
+	int trash_step = 5;
+	if (T > 2.0 && T <= 2.5) trash_step = 10;
 
 	double padd = 1 - exp(-2 / T);
 	vector<double> array(size * size, 0);
@@ -118,7 +118,7 @@ void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, d
 }
 int main()
 {
-	int size;
+	int size=48;
 	double temperature;
 	double Mag = 0, mag_sus = 0, Mag2 = 0, Mag4 = 0;
 
@@ -126,49 +126,47 @@ int main()
 
 	ofstream File;
 	File.open("wolff_scale.txt");
-	cout << "File open: " << endl;
+	cout << "File open: " << size << endl;
 	File << "size temperature m m^2 m^4 mag_sus" << endl;
-	for (int s = 0; s < 4; s++) {
-		size = 16 * (1 + s);
-		vector < vector <double> > near(size * size, vector<double>(4, 0));
-		neighbor(near, size);
-		for (int k = 1; k < 75; k++) { // 0.02~1.48
-			for (int h = 0; h < 5; h++) {
-				MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
-				File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
-			}
-			cout << 0.02 * k << "end" << endl;
+	
+	vector < vector <double> > near(size * size, vector<double>(4, 0));
+	neighbor(near, size);
+	for (int k = 1; k < 75; k++) { // 0.02~1.48
+		for (int h = 0; h < 5; h++) {
+			MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
+			File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
 		}
-		for (int k = 150; k < 200; k++) { // 1.50~1.99
-			for (int h = 0; h < 5; h++) {
-				MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
-				File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
-			}
-			cout << 0.01 * k << "end" << endl;
-		}
-		for (int k = 2000; k < 2500; k++) { // 2.000~2.499
-			for (int h = 0; h < 5; h++) {
-				MC_1cycle(size, 0.001 * k, Mag, mag_sus, Mag2, Mag4, near);
-				File << size << " " << 0.001 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
-			}
-			cout << 0.001 * k << "end" << endl;
-		}
-		for (int k = 250; k < 300; k++) { // 2.50~2.99
-			for (int h = 0; h < 5; h++) {
-				MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
-				File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
-			}
-			cout << 0.01 * k << "end" << endl;
-		}
-		for (int k = 150; k < 251; k++) { // 3.00~5.00
-			for (int h = 0; h < 5; h++) {
-				MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
-				File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
-			}
-			cout << 0.02 * k << "end" << endl;
-		}
-		cout << "size: " << size << " finished :)" << endl;
+		cout << 0.02 * k << "end" << endl;
 	}
+	for (int k = 150; k < 200; k++) { // 1.50~1.99
+		for (int h = 0; h < 5; h++) {
+			MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
+			File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+		}
+		cout << 0.01 * k << "end" << endl;
+	}
+	for (int k = 2000; k < 2500; k++) { // 2.000~2.499
+		for (int h = 0; h < 5; h++) {
+			MC_1cycle(size, 0.001 * k, Mag, mag_sus, Mag2, Mag4, near);
+			File << size << " " << 0.001 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+		}
+		cout << 0.001 * k << "end" << endl;
+	}
+	for (int k = 250; k < 300; k++) { // 2.50~2.99
+		for (int h = 0; h < 5; h++) {
+			MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
+			File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+		}
+		cout << 0.01 * k << "end" << endl;
+	}
+	for (int k = 150; k < 226; k++) { // 3.00~4.5
+		for (int h = 0; h < 5; h++) {
+			MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
+			File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+		}
+		cout << 0.02 * k << "end" << endl;
+	}
+	cout << "size: " << size << " finished :)" << endl;
 	File.close();
 
 
