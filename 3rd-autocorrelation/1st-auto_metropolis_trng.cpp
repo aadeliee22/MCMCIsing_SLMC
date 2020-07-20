@@ -25,6 +25,14 @@ void initialize(vector<double>& v, int size) //initial -random- state
 		v[i] = dis(gen) < 0.5 ? 1 : -1;
 	}*/
 }
+void color(vector<double>& v, int size) //graphing state
+{
+	for (int i = 0; i < size * size; i++) {
+		if (i % size == 0) cout << endl;
+		if (v[i] == 1) cout << "* ";
+		if (v[i] == -1) cout << ". ";
+	}
+}
 void neighbor(vector < vector <double> >& na, int size)
 {
 	int sizes = size * size;
@@ -44,54 +52,68 @@ double Magnet(vector<double>& v, int size)
 	m = abs(m) / (v.size()); //absolute value of average spin
 	return m;
 }
-void Cluster_1step(vector<double>& v, int size, double padd, vector < vector <double> >& na)
+double delU(vector<double>& v, int size, int i, vector < vector <double> >& na)
+{
+	double E = 2 * v[i] * (v[na[i][0]] + v[na[i][1]] + v[na[i][2]] + v[na[i][3]]);
+	return E;
+}
+double exp_delU(double E, double* expE)
+{
+	double result;
+	if (E == 8) result = *(expE);
+	else if (E == 4) result = *(expE + 1);
+	else result = 1;
+	return result;
+}
+void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double> >& na)
 {
 	gen.seed(rd);
-	int i = size * size * dis(gen);
-	vector<int> stack(1, i);
-	double oldspin = v[i];
-	double newspin = -v[i];
-	v[i] = newspin;
-	int sp = 0;
-	while (1) {
-		if (v[na[i][0]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
-		if (v[na[i][1]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
-		if (v[na[i][2]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
-		if (v[na[i][3]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
-		sp++;
-		if (sp >= stack.size()) break;
-		i = stack.at(sp);
+	for (int i = 0; i < size; i++) {
+		int j = i % 2;
+		for (int k = 0; k<int(size / 2); k++) {
+			double Ediff = delU(v, size, size * i + j, na);
+			if (Ediff <= 0) v[size * i + j] = -v[size * i + j];
+			else {
+				if (dis(gen) <= exp_delU(Ediff, expE)) v[size * i + j] = -v[size * i + j];
+			}
+			j = j + 2;
+		}
+	}
+	for (int i = 1; i < size + 1; i++) {
+		int j = i % 2;
+		for (int k = 0; k<int(size / 2); k++) {
+			double Ediff = delU(v, size, size * (i - 1) + j, na);
+			if (Ediff <= 0) v[size * (i - 1) + j] = -v[size * (i - 1) + j];
+			else {
+				if (dis(gen) <= exp_delU(Ediff, expE)) v[size * (i - 1) + j] = -v[size * (i - 1) + j];
+			}
+			j = j + 2;
+		}
 	}
 
 }
 void MC_1cycle(int size, double T, vector < vector <double> >& na, vector<double>& magnet, vector<double>& magsus)
 {
 	int step1 = 5000, step2 = 10000;
-	int scale=1;
-	// double slope = (double(size)*size/3.0)/2.7;
-	// if (T>2.3) {
-	// 	scale = slope * (T - 2.3);
-	// 	if (scale == 0) scale = 1;
-	// }
-	// int trash_step = scale*(int(size/16)+2);
-	// if (T > 2.0 && T <= 2.5) trash_step = trash_step*2;
+	// int trash_step = 5 + size;
+	// if (T > 2.0 && T < 2.5) trash_step = trash_step * 2;
 
-	double padd = 1 - exp(-2 / T);
+	double expE[2] = { exp(-8 / T), exp(-4 / T) };
 	vector<double> array(size * size, 0);
 	initialize(array, size);
 
-	for (int k = 0; k < step1*scale; k++) { Cluster_1step(array, size, padd, na); }
+	for (int k = 0; k < step1; k++) { MC_1step(array, size, &expE[0], na); }
 
-	double M = 0, Mag = 0, Mag2 = 0;
+	double M=0, Mag = 0, Mag2 = 0;
 	for (int k = 0; k < step2; k++) {
-		Cluster_1step(array, size, padd, na);
+		MC_1step(array, size, &expE[0], na);
 		M = Magnet(array, size);
 		Mag = Mag + M; Mag2 = Mag2 + pow(M, 2);
 		magnet.at(k) = M;
-		magsus.at(k) = pow(size,2)*(Mag2 / (k+1) - pow(Mag / (k+1), 2))/T;
+		magsus.at(k) = pow(size, 2)*(Mag2 / (k+1) - pow(Mag / (k+1), 2))/T;
 	}
-
 }
+
 int main()
 {
 	int size;
@@ -101,8 +123,8 @@ int main()
 	clock_t start = clock();
 
 	ofstream File;
-	File.open("at_cluster_trng.txt");
-	cout << "(cluster) File open: " << size << endl;
+	File.open("at_met_trng.txt");
+	cout << "(trng) File open: " << size << endl;
 	File << "trial magnet magsus size: " << size << endl;
 
 	vector < vector <double> > near(size * size, vector<double>(4, 0));
@@ -116,8 +138,9 @@ int main()
 		}
 		cout << h+1 << " trial end" << endl;
 	}
+	
 	File.close();
-
+	cout << "File closed " << endl;
 
 	cout << endl << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
 	return 0;
