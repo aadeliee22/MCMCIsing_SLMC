@@ -86,9 +86,9 @@ void MC_1cycle(int size, double T, vector < vector <double> >& na, vector<double
 	for (int k = 0; k < step2; k++) {
 		Cluster_1step(array, size, padd, na);
 		M = Magnet(array, size);
-		Mag = Mag + M; Mag2 = Mag2 + pow(M, 2);
+		//Mag = Mag + M; Mag2 = Mag2 + pow(M, 2);
 		magnet.at(k) = M;
-		magsus.at(k) = pow(size,2)*(Mag2 / (k+1) - pow(Mag / (k+1), 2))/T;
+		//magsus.at(k) = pow(size,2)*(Mag2 / (k+1) - pow(Mag / (k+1), 2))/T;
 	}
 
 }
@@ -103,7 +103,7 @@ int main()
 	ofstream File;
 	File.open("at_cluster_trng.txt");
 	cout << "(cluster) File open: " << size << endl;
-	File << "trial magnet magsus size: " << size << endl;
+	File << "trial magnet size: " << size << endl;
 
 	vector < vector <double> > near(size * size, vector<double>(4, 0));
 	vector<double> magnet(10000, 0); vector<double> magsus(10000,0);
@@ -112,7 +112,7 @@ int main()
 		gen.seed(rd);
 		MC_1cycle(size, temperature, near, magnet, magsus);
 		for (int i=0;i<10000;i++){
-			File << h << " " << magnet.at(i) << " " << magsus.at(i) << endl;
+			File << h << " " << magnet.at(i) << endl;
 		}
 		cout << h+1 << " trial end" << endl;
 	}

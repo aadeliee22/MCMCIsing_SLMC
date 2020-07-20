@@ -94,7 +94,7 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 }
 void MC_1cycle(int size, double T, vector < vector <double> >& na, vector<double>& magnet, vector<double>& magsus)
 {
-	int step1 = 5000, step2 = 10000;
+	int step1 = 5000, step2 = 100000;
 	// int trash_step = 5 + size;
 	// if (T > 2.0 && T < 2.5) trash_step = trash_step * 2;
 
@@ -108,9 +108,9 @@ void MC_1cycle(int size, double T, vector < vector <double> >& na, vector<double
 	for (int k = 0; k < step2; k++) {
 		MC_1step(array, size, &expE[0], na);
 		M = Magnet(array, size);
-		Mag = Mag + M; Mag2 = Mag2 + pow(M, 2);
+		//Mag = Mag + M; Mag2 = Mag2 + pow(M, 2);
 		magnet.at(k) = M;
-		magsus.at(k) = pow(size, 2)*(Mag2 / (k+1) - pow(Mag / (k+1), 2))/T;
+		//magsus.at(k) = pow(size, 2)*(Mag2 / (k+1) - pow(Mag / (k+1), 2))/T;
 	}
 }
 
@@ -125,16 +125,16 @@ int main()
 	ofstream File;
 	File.open("at_met_trng.txt");
 	cout << "(trng) File open: " << size << endl;
-	File << "trial magnet magsus size: " << size << endl;
+	File << "trial magnet size: " << size << endl;
 
 	vector < vector <double> > near(size * size, vector<double>(4, 0));
-	vector<double> magnet(10000, 0); vector<double> magsus(10000,0);
+	vector<double> magnet(100000, 0); vector<double> magsus(10000,0);
 	neighbor(near, size);
 	for (int h = 0; h < 20; h++) {
 		gen.seed(rd);
 		MC_1cycle(size, temperature, near, magnet, magsus);
-		for (int i=0;i<10000;i++){
-			File << h << " " << magnet.at(i) << " " << magsus.at(i) << endl;
+		for (int i=0;i<100000;i++){
+			File << h << " " << magnet.at(i) << endl;
 		}
 		cout << h+1 << " trial end" << endl;
 	}
