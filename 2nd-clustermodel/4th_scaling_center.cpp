@@ -124,8 +124,8 @@ int main()
 	clock_t start = clock();
 
 	ofstream File;
-	File.open("wolff_center.txt");
-	cout << "(center) File open: " << size << endl;
+	File.open("wolff_center_2.txt");
+	cout << "(center2) File open: " << size << endl;
 	File << "size temperature m m^2 m^4 mag_sus" << endl;
 	
 	vector < vector <double> > near(size * size, vector<double>(4, 0));

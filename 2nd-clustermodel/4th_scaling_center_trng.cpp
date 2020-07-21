@@ -130,47 +130,47 @@ int main()
 	clock_t start = clock();
 
 	ofstream File;
-	File.open("wolff_edge_trng.txt");
-	cout << "(edge) File open: " << size << endl;
+	File.open("wolff_center_trng2.txt");
+	cout << "(center2) File open: " << size << endl;
 	File << "size temperature m m^2 m^4 mag_sus" << endl;
 	
 	vector < vector <double> > near(size * size, vector<double>(4, 0));
 	neighbor(near, size);
-	for (int k = 1; k < 75; k++) { // 0.02~1.48
-		for (int h = 0; h < 5; h++) {
-			MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
-			File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
-		}
-		cout << 0.02 * k << "end" << endl;
-	}
-	for (int k = 150; k < 200; k++) { // 1.50~1.99
-		for (int h = 0; h < 5; h++) {
-			MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
-			File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
-		}
-		cout << 0.01 * k << "end" << endl;
-	}
-	// for (int k = 2000; k < 2500; k++) { // 2.000~2.499
+	// for (int k = 1; k < 75; k++) { // 0.02~1.48
 	// 	for (int h = 0; h < 5; h++) {
-	// 		MC_1cycle(size, 0.001 * k, Mag, mag_sus, Mag2, Mag4, near);
-	// 		File << size << " " << 0.001 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+	// 		MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
+	// 		File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
 	// 	}
-	// 	cout << 0.001 * k << " end" << endl;
+	// 	cout << 0.02 * k << "end" << endl;
 	// }
-	for (int k = 250; k < 300; k++) { // 2.50~2.99
+	// for (int k = 150; k < 200; k++) { // 1.50~1.99
+	// 	for (int h = 0; h < 5; h++) {
+	// 		MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
+	// 		File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+	// 	}
+	// 	cout << 0.01 * k << "end" << endl;
+	// }
+	for (int k = 2000; k < 2500; k++) { // 2.000~2.499
 		for (int h = 0; h < 5; h++) {
-			MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
-			File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+			MC_1cycle(size, 0.001 * k, Mag, mag_sus, Mag2, Mag4, near);
+			File << size << " " << 0.001 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
 		}
-		cout << 0.01 * k << "end" << endl;
+		cout << 0.001 * k << " end" << endl;
 	}
-	for (int k = 150; k < 226; k++) { // 3.00~4.5
-		for (int h = 0; h < 5; h++) {
-			MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
-			File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
-		}
-		cout << 0.02 * k << "end" << endl;
-	}
+	// for (int k = 250; k < 300; k++) { // 2.50~2.99
+	// 	for (int h = 0; h < 5; h++) {
+	// 		MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
+	// 		File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+	// 	}
+	// 	cout << 0.01 * k << "end" << endl;
+	// }
+	// for (int k = 150; k < 226; k++) { // 3.00~4.5
+	// 	for (int h = 0; h < 5; h++) {
+	// 		MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
+	// 		File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+	// 	}
+	// 	cout << 0.02 * k << "end" << endl;
+	// }
 	File.close();
 
 
