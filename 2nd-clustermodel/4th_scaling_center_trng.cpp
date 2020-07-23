@@ -123,15 +123,15 @@ int main()
 {
 	random_device rd;
 	gen.seed(rd);
-	int size;
-	cout << "Center, What size?: ";	cin >> size;
+	int size=80;
+	//cout << "Center, What size?: ";	cin >> size;
 	double Mag = 0, mag_sus = 0, Mag2 = 0, Mag4 = 0;
 
 	clock_t start = clock();
 
 	ofstream File;
-	File.open("wolff_center_trng2.txt");
-	cout << "(center2) File open: " << size << endl;
+	File.open("wolff_center_trng.txt");
+	cout << "(center) File open: " << size << endl;
 	File << "size temperature m m^2 m^4 mag_sus" << endl;
 	
 	vector < vector <double> > near(size * size, vector<double>(4, 0));
@@ -150,7 +150,7 @@ int main()
 	// 	}
 	// 	cout << 0.01 * k << "end" << endl;
 	// }
-	for (int k = 2000; k < 2500; k++) { // 2.000~2.499
+	for (int k = 2100; k < 2400; k++) { // 2.000~2.499
 		for (int h = 0; h < 5; h++) {
 			MC_1cycle(size, 0.001 * k, Mag, mag_sus, Mag2, Mag4, near);
 			File << size << " " << 0.001 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;

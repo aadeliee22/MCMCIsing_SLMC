@@ -1,4 +1,4 @@
-size temperature m m^2 m^4 mag_sus
+size temperature m m^2 m^4 mag_sus 
 32 0.02 1 1 1 0 
 32 0.02 1 1 1 0 
 32 0.02 1 1 1 0 
