@@ -163,7 +163,7 @@ int main()
 		vector < vector <double> > near(size * size, vector<double>(4, 0));
 		vector<double> magnet(100000, 0); vector<double> magsus(100000,0);
 		neighbor(near, size);
-		for (int t = 2150; t < 2350; t++) {
+		for (int t = 2200; t < 2500; t++) {
 			for (int i=0;i<5;i++){
 				double err_m=0, err_ms=0;
 				gen.seed(rd);

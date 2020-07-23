@@ -144,15 +144,13 @@ int main()
 		vector < vector <double> > near(size * size, vector<double>(4, 0));
 		vector<double> magnet(10000, 0); vector<double> magsus(10000,0);
 		neighbor(near, size);
-		for (int t = 2150; t < 2350; t++) {
-			for (int i=0;i<5;i++){
-				double err_m=0, err_ms=0;
-				gen.seed(rd);
-				MC_1cycle(size, 0.001*t, near, magnet, magsus);
-				err_m = jack_error(size, magnet);
-				err_ms = jack_error(size, magsus);
-				File << size << " " << 0.001*t << " " << err_m << " " << err_ms << endl;
-				}
+		for (int t = 2200; t < 2500; t++) {
+			double err_m=0, err_ms=0;
+			gen.seed(rd);
+			MC_1cycle(size, 0.001*t, near, magnet, magsus);
+			err_m = jack_error(size, magnet);
+			err_ms = jack_error(size, magsus);
+			File << size << " " << 0.001*t << " " << err_m << " " << err_ms << endl;
 			cout << 0.001*t << " end" << endl;
 		}
 		cout << "size " << size << " finished" << endl;
