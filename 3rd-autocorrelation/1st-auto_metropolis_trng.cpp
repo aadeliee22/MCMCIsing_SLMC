@@ -94,7 +94,7 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 }
 void MC_1cycle(int size, double T, vector < vector <double> >& na, vector<double>& magnet, vector<double>& magsus)
 {
-	int step1 = 5000, step2 = 100000;
+	int step1 = 5000, step2 = 150000;
 	// int trash_step = 5 + size;
 	// if (T > 2.0 && T < 2.5) trash_step = trash_step * 2;
 
@@ -116,8 +116,8 @@ void MC_1cycle(int size, double T, vector < vector <double> >& na, vector<double
 
 int main()
 {
-	int size;
-	cout << "Size: "; cin >> size;
+	int size=128;
+	//cout << "Size: "; cin >> size;
 	double temperature = 2.2692;
 
 	clock_t start = clock();
@@ -128,12 +128,12 @@ int main()
 	File << "trial magnet size: " << size << endl;
 
 	vector < vector <double> > near(size * size, vector<double>(4, 0));
-	vector<double> magnet(100000, 0); vector<double> magsus(10000,0);
+	vector<double> magnet(150000, 0); vector<double> magsus(10000,0);
 	neighbor(near, size);
 	for (int h = 0; h < 20; h++) {
 		gen.seed(rd);
 		MC_1cycle(size, temperature, near, magnet, magsus);
-		for (int i=0;i<100000;i++){
+		for (int i=0;i<150000;i++){
 			File << h << " " << magnet.at(i) << endl;
 		}
 		cout << h+1 << " trial end" << endl;
