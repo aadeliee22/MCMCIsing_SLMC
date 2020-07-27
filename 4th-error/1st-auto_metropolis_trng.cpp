@@ -164,7 +164,7 @@ int main()
 		vector<double> magnet(100000, 0); vector<double> magsus(100000,0);
 		neighbor(near, size);
 		for (int t = 2200; t < 2500; t++) {
-			for (int i=0;i<5;i++){
+			for (int i=0;i<1;i++){
 				double err_m=0, err_ms=0;
 				gen.seed(rd);
 				MC_1cycle(size, 0.001*t, near, magnet, magsus);
