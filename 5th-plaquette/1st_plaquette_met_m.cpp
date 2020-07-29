@@ -51,23 +51,17 @@ void neighbor(vector < vector <double> >& na, int size)
 }
 double Magnet(vector<double>& v, int size)
 {
-	// double m1 = 0, m2 = 0;
-	// for (vector<int>::size_type i = 0; i < v.size(); i=i+2) {
-	// 	m1 = m1 + v.at(i) - v.at(i+1);
-	// }
-	// for (int i = 0; i < size; i=i+2) {
-	// 	for (int j = 0; j < size; j++){
-	// 		m2 = m2 + v.at(size*i+j) - v.at(size*(i+1)+j);
-	// 	}
-	// }
-	// m1 = m1 / (v.size()); m2 = m2 / (v.size());
-	// return sqrt(m1*m1+m2*m2);
-	double m = 0;
-	for (vector<int>::size_type i=0; i<v.size(); i++){
-		m = m + v.at(i);
+	double m1 = 0, m2 = 0;
+	for (vector<int>::size_type i = 0; i < v.size(); i=i+2) {
+		m1 = m1 + v.at(i) - v.at(i+1);
 	}
-	m = m / (v.size());
-	return abs(m);
+	for (int i = 0; i < size; i=i+2) {
+		for (int j = 0; j < size; j++){
+			m2 = m2 + v.at(size*i+j) - v.at(size*(i+1)+j);
+		}
+	}
+	m1 = m1 / (v.size()); m2 = m2 / (v.size());
+	return sqrt(m1*m1+m2*m2);
 }
 double Energy(vector<double>& v, int size, vector < vector <double> >& na, double K)
 {
@@ -154,7 +148,7 @@ void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, d
 {
 	int step1 = 2000, step2 = 10000;
 	int trash_step =  size+5;
-	if (T > 2.3 && T < 2.7) trash_step = trash_step * 2;
+	//if (T > 2.3 && T < 2.7) trash_step = trash_step * 2;
 
 	double expE[4] = { exp(-8 / T), exp(-4 / T), exp(4 / T), exp(8 / T) };
 	vector<double> array(size * size, 0);
@@ -186,9 +180,10 @@ void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, d
 	mag = Mag / step2;
 	//ene = Ene / step2;
 	mag_sus = size*size * (Mag2 / step2 - (Mag/step2)*(Mag/step2)) / T;
-	mag2 = Mag2 / step2;
-	mag4 = Mag4 / step2;
+	//mag2 = Mag2 / step2;
+	//mag4 = Mag4 / step2;
 	//sp_heat = (Ene2 / step2 - pow(Ene / step2, 2)) / pow(size * T, 2);
+	//return Mag, Ene, mag_sus, sp_heat;
 }
 void MC_1cycle_graphing(int size, double T, vector < vector <double> >& na, double K)
 {
@@ -247,16 +242,44 @@ int main()
 	neighbor(near, size);
 
 	ofstream File;
-	File.open("plaquette_m1.txt");
-	cout << "File open: " << size << endl;
+	File.open("plaquette_m2.txt");
+	cout << "File 2 open: " << size << endl;
 	File << "size temperature m mag_sus" << endl;
-	for (int k = 300; k < 700; k++) {
-		for (int h = 0; h < 5; h++) {
-			MC_1cycle(size, 0.005 * k, Mag, mag_sus, Mag2, Mag4, near, K);
-			File << size << " " << 0.005 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+	// for (int k = 1; k < 75; k++) { // 0.02~1.48
+	// 	for (int h = 0; h < 5; h++) {
+	// 		MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
+	// 		File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+	// 	}
+	// 	cout << 0.02 * k << "end" << endl;
+	// }
+	// for (int k = 150; k < 200; k++) { // 1.50~1.99
+	// 	for (int h = 0; h < 5; h++) {
+	// 		MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
+	// 		File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+	// 	}
+	// 	cout << 0.01 * k << "end" << endl;
+	// }
+	for (int k = 1; k < 50; k++) { // 2.000~2.499
+		for (int h = 0; h < 2; h++) {
+			MC_1cycle(size, 0.1 * k, Mag, mag_sus, Mag2, Mag4, near, K);
+			File << size << " " << 0.1 * k << " " << Mag << " "  << mag_sus << " " << endl;
 		}
-		cout << 0.005 * k << " end" << endl;
+		cout << 0.1 * k << " end" << endl;
 	}
+	// for (int k = 250; k < 300; k++) { // 2.50~2.99
+	// 	for (int h = 0; h < 5; h++) {
+	// 		MC_1cycle(size, 0.01 * k, Mag, mag_sus, Mag2, Mag4, near);
+	// 		File << size << " " << 0.01 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+	// 	}
+	// 	cout << 0.01 * k << "end" << endl;
+	// }
+	// for (int k = 150; k < 226; k++) { // 3.00~4.5
+	// 	for (int h = 0; h < 5; h++) {
+	// 		MC_1cycle(size, 0.02 * k, Mag, mag_sus, Mag2, Mag4, near);
+	// 		File << size << " " << 0.02 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+	// 	}
+	// 	cout << 0.02 * k << "end" << endl;
+	// }
 	File.close();
 
 	cout << endl << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
