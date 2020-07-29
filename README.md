@@ -8,3 +8,5 @@ This folder is about classical ising model with 1/2 spin, up&down.
 4. Measuring error using jack knife.
 
 The data is made from c++ and analyzed (More precisely, 'plotted.') by python.
+
+5. Self learning Monte Carlo method..
