@@ -94,7 +94,7 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 }
 void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, double& mag4, vector < vector <double> >& na)
 {
-	int step1 = 2000, step2 = 10000;
+	int step1 = 2500, step2 = 10000;
 	int trash_step =  size+8;
 	if (T > 2.1 && T < 2.4) trash_step = trash_step * 2;
 
@@ -118,7 +118,7 @@ void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, d
 	for (vector<int>::size_type i = 0; i < magnet.size(); i++) {
 		Mag = Mag + magnet.at(i);
 		Mag2 = Mag2 + pow(magnet.at(i), 2);
-		Mag4 = Mag4 + pow(magnet.at(i), 4);
+		//Mag4 = Mag4 + pow(magnet.at(i), 4);
 		/*Ene = Ene + energy.at(i);
 		Ene2 = Ene2 + pow(energy.at(i), 2);*/
 	}
@@ -126,8 +126,8 @@ void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, d
 	mag = Mag / step2;
 	//ene = Ene / step2;
 	mag_sus = pow(size, 2) * (Mag2 / step2 - pow(Mag / step2, 2)) / T;
-	mag2 = Mag2 / step2;
-	mag4 = Mag4 / step2;
+	//mag2 = Mag2 / step2;
+	//mag4 = Mag4 / step2;
 	//sp_heat = (Ene2 / step2 - pow(Ene / step2, 2)) / pow(size * T, 2);
 	//return Mag, Ene, mag_sus, sp_heat;
 }
@@ -136,14 +136,14 @@ int main()
 {
 	random_device rd;
 	gen.seed(rd);
-	int size=48;
+	int size=80;
 	//cout << "Center, What size?: ";	cin >> size;
 	double Mag = 0, mag_sus = 0, Mag2 = 0, Mag4 = 0;
 
 	clock_t start = clock();
 
 	ofstream File;
-	File.open("met_center2.txt");
+	File.open("met_center_80.txt");
 	cout << "(met_center) File open: " << size << endl;
 	File << "size temperature m m^2 m^4 mag_sus" << endl;
 
@@ -163,10 +163,10 @@ int main()
 	// 	}
 	// 	cout << 0.01 * k << "end" << endl;
 	// }
-	for (int k = 2000; k < 2500; k++) { // 2.000~2.499
+	for (int k = 2200; k < 2500; k++) { // 2.000~2.499
 		for (int h = 0; h < 5; h++) {
 			MC_1cycle(size, 0.001 * k, Mag, mag_sus, Mag2, Mag4, near);
-			File << size << " " << 0.001 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+			File << size << " " << 0.001 * k << " " << Mag << " "  << mag_sus << " " << endl;
 		}
 		cout << 0.001 * k << " end" << endl;
 	}
