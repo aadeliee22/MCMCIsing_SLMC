@@ -9,4 +9,4 @@ This folder is about classical ising model with 1/2 spin, up&down.
 
 The data is made from c++ and analyzed (More precisely, 'plotted.') by python.
 
-5. Self learning Monte Carlo method..
+5. Self learning Monte Carlo method using 4-plaquette and nnn, nnnn
