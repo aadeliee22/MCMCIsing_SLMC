@@ -237,7 +237,7 @@ int main()
 	random_device rd;
 	gen.seed(rd);
 	double K=0.2;
-	int size=40;
+	int size=10;
 	//cout << "What size?: ";	cin >> size;
 	double Mag = 0, mag_sus = 0, Mag2 = 0, Mag4 = 0;
 
