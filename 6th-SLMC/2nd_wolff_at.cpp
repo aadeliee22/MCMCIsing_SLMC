@@ -115,30 +115,20 @@ vector < vector <double> >& na, double T, double K, vector<double>& J)
 	}
 }
 void wolff_cycle(int size, double T, vector < vector <double> >& na, double K, vector<double>& J,
-vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
+vector<double>& padd, vector<double>& magnet)
 {
-	int step1 = 2500, step2 = 10000;
-	int scale=1; double Tstart = 2.3 * J[1], clsizef = 1.86 * J[1] * J[1] + 1;
-	if (J[2]>0) { Tstart = Tstart + 0.2 * (J[2]/0.05); clsizef = clsizef + 1.6*J[2]/0.02; }
-	double slope = (double(size)*size/clsizef)/(5-Tstart);
-	if (T>Tstart) { scale = slope * (T - Tstart); if (scale == 0) scale = 1; }
+	int step1 = 2500, step2 = 50000;
+	int scale=1;
 	int trash_step = scale*(sqrt(size));
 
-	vector<double> padd(3);
-	for (int i = 0; i < 3; i++){ padd.at(i) = 1 - exp(-2 * J[i+1] / T); }
 	vector<double> array(size * size, 0);
 	initialize(array, size);
 
 	for (int k = 0; k < step1*scale; k++) { Cluster_1step(array, size, padd, na, T, K, J); }
+	vector<double> magnet(step2, 0);
 	for (int k = 0; k < step2; k++) {
-		for (int h = 0; h < trash_step; h++) {
-			Cluster_1step(array, size, padd, na, T, K, J);
-		}
-		//magnet.at(k) = Magnet(array, size);
-		energy.at(k) = originalEnergy(array, size, na, K);
-		nn.at(k) = nnnEne(array, size, na, 1);
-		nnn.at(k) = nnnEne(array, size, na, 2);
-		nnnn.at(k) = nnnEne(array, size, na, 3);
+		Cluster_1step(array, size, padd, na, T, K, J);
+		magnet.at(k) = Magnet(array, size);
 	}
 }
 int main()
@@ -146,29 +136,26 @@ int main()
 	random_device rd; gen.seed(rd);
 	double K = 0.2;
 	vector<double> J(4);
-	int size = 10; double temp;
-	//filein.txt format: temperature \n E0 \n J1 \n J2 \n J3
+	int size = 10; double temp=2.493;
 	ifstream Filein; Filein.open("filein.txt"); 
 	for (int i = 0; i < 4; i++){ Filein >> J[i]; }
-	Filein >> temp;
-	temp = temp - 0.2;
 
+	for (int k = 300; k < 700; k++) {
+		vector<double> padd(3);
+		for (int i = 0; i < 3; i++){ padd.at(i) = 1 - exp(-2 * J[i+1] / temp); }
 	clock_t start = clock();
 
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
-	vector<double> energy(10000, 0); 
-	vector<double> nn(10000,0);
-	vector<double> nnn(10000,0);
-	vector<double> nnnn(10000,0);
+	vector<double> magnet(50000, 0); 
 	neighbor(near, size);
 
 	ofstream Fileout; 
-	Fileout.open("fileout.txt");
-	cout << "File open: " << temp << endl;
-	Fileout << "temp ene nn nnn nnnn " << endl;
-	wolff_cycle(size, temp, near, K, J, energy, nn, nnn, nnnn);
-	for (int i = 0; i < 10000; i++){
-		Fileout << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
+	Fileout.open("10_c_at.txt");
+	cout << "File open: " << size << endl;
+	Fileout << "size magnet " << endl;
+	wolff_cycle(size, temp, near, K, J, padd, magnet);
+	for (int i = 0; i < 50000; i++){
+		Fileout << size << " " << magnet.at(i) << endl;
 	}
 	Fileout.close();
 

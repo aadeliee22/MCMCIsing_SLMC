@@ -51,6 +51,14 @@ double Magnet(vector<double>& v, int size)
 	m = abs(m) / (v.size()); //absolute value of average spin
 	return m;
 }
+double nnnEne(vector<double>& v, int size, vector < vector <double> >& na, int ith)
+{
+	double nnn = 0;
+	for (int i = 0; i < size * size; i++){
+		nnn = nnn - v[i] * (v[na[i][4*ith-3]] + v[na[i][4*ith-1]]);
+	}
+	return nnn;
+}
 double originalEnergy(vector<double>& v, int size, vector < vector <double> >& na, double K)
 {
 	double e = 0;
@@ -62,18 +70,10 @@ double originalEnergy(vector<double>& v, int size, vector < vector <double> >& n
 double effEnergy(vector<double>& v, int size, vector < vector <double> >& na, vector<double>& J)
 {
 	double e = J[0];
-	for (int i = 0; i < 3; i++){
+	for (int i = 1; i < 4; i++){
 		e = e + J[i] * nnnEne(v, size, na, i);
 	}
 	return e;
-}
-double nnnEne(vector<double>& v, int size, vector < vector <double> >& na, int ith)
-{
-	double nnn = 0;
-	for (int i = 0; i < size * size; i++){
-		nnn = nnn - v[i] * (v[na[i][4*ith-3]] + v[na[i][4*ith-1]]);
-	}
-	return nnn;
 }
 void Cluster_1step(vector<double>& array, int size, vector<double>& padd, 
 vector < vector <double> >& na, double T, double K, vector<double>& J)
@@ -157,14 +157,11 @@ int main()
 	int size = 10; double temp;
 	//filein.txt format: temperature \n E0 \n J1 \n J2 \n J3
 	ifstream Filein; Filein.open("filein.txt"); 
-	Filein >> temp;
 	for (int i = 0; i < 4; i++){ Filein >> J[i]; }
-	temp = temp - 0.3;
+	Filein >> temp;
 
 	double Tstart = 2.3 * J[1], clsizef = 1.86 * J[1] * J[1] + 1;
 	if (J[2]>0) { Tstart = Tstart + 0.2 * (J[2]/0.05); clsizef = clsizef + 1.6*J[2]/0.02; }
-	vector<double> padd(3);
-	for (int i = 0; i < 3; i++){ padd.at(i) = 1 - exp(-2 * J[i+1] / T); }
 	double Mag = 0, mag_sus = 0, Mag2 = 0, Mag4 = 0;
 
 	clock_t start = clock();
@@ -174,16 +171,18 @@ int main()
 
 	ofstream Fileout; 
 	Fileout.open("fileout.txt");
-	cout << "File open: " << size << endl;
-	File << "size temperature m m2 m4 mag_sus " << endl;
+	cout << "File open: " << temp << endl;
+	Fileout << "size temperature m m2 m4 mag_sus " << endl;
 	for (int k = 300; k < 700; k++) {
-		for (int h = 0; h < 5; h++) {
-			MC_1cycle(size, 0.005 * k, Mag, mag_sus, Mag2, Mag4, near, K, J, padd, Tstart, clsizef);
-			File << size << " " << 0.005 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+		vector<double> padd(3);
+		for (int i = 0; i < 3; i++){ padd.at(i) = 1 - exp(-2 * J[i+1] / (0.005 * k)); }
+		for (int h = 0; h < 3; h++) {
+			wolff_cycle(size, 0.005 * k, Mag, mag_sus, Mag2, Mag4, near, K, J, padd, Tstart, clsizef);
+			Fileout << size << " " << 0.005 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
 		}
 		cout << 0.005 * k << " end" << endl;
 	}
-	File.close();
+	Fileout.close();
 
 	cout << endl << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
 	return 0;

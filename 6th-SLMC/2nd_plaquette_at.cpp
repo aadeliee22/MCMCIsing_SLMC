@@ -141,9 +141,9 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 
 }
 void met_cycle(int size, double T, vector < vector <double> >& na, double K, 
-vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
+vector<double>& magnet)
 {
-	int step1 = 2500, step2 = 10000;
+	int step1 = 2500, step2 = 100000;
 	int trash_step =  size;
 	if (T > 2.4 && T < 2.7) trash_step = trash_step * 2;
 
@@ -153,14 +153,8 @@ vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>&
 
 	for (int k = 0; k < step1; k++) { MC_1step(array, size, &expE[0], na, K); }
 	for (int k = 0; k < step2; k++) {
-		for (int h = 0; h < trash_step; h++) {
-			MC_1step(array, size, &expE[0], na, K);
-		}
-		//magnet.at(k) = Magnet(array, size);
-		energy.at(k) = originalEnergy(array, size, na, K);
-		nn.at(k) = nnnEne(array, size, na, 1);
-		nnn.at(k) = nnnEne(array, size, na, 2);
-		nnnn.at(k) = nnnEne(array, size, na, 3);
+		MC_1step(array, size, &expE[0], na, K);
+		magnet.at(k) = Magnet(array, size);
 	}
 }
 
@@ -170,24 +164,21 @@ int main()
 	gen.seed(rd);
 	double K = 0.2;
 	int size = 10;
-	double temp = 4.493;
+	double temp = 2.493;
 
 	clock_t start = clock();
 
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
-	vector<double> energy(10000, 0); 
-	vector<double> nn(10000,0);
-	vector<double> nnn(10000,0);
-	vector<double> nnnn(10000,0);
+	vector<double> magnet(100000, 0); 
 	neighbor(near, size);
 
 	ofstream Fileout;
-	Fileout.open("fileout.txt");
+	Fileout.open("10_p_at.txt");
 	cout << "Fileout open: " << size << endl;
-	Fileout << "temp ene nn nnn nnnn " << endl;
-	met_cycle(size, temp, near, K, energy, nn, nnn, nnnn);
-	for (int i = 0; i < 10000; i++){
-		Fileout << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
+	Fileout << "size magnet " << endl;
+	met_cycle(size, temp, near, K, magnet);
+	for (int i = 0; i < 100000; i++){
+		Fileout << size << " " << magnet.at(i) << endl;
 	}
 	Fileout.close();
 
