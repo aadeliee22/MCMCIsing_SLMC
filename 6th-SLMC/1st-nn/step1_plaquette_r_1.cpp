@@ -15,11 +15,8 @@ trng::uniform01_dist<> dis;
 
 void initialize(vector<double>& v, int size) //initial -random- state
 {
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			if ((i + j) % 2 == 0) v[size * i + j] = 1;
-			else v[size * i + j] = -1;
-		}
+	for (int i = 0; i < size * size; i++) {
+		v[i] = dis(gen) < 0.5 ? 1 : -1;
 	}
 	
 }
@@ -142,7 +139,7 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 
 }
 void met_cycle(int size, double T, vector < vector <double> >& na, double K, 
-vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
+vector<double>& energy, vector<double>& nn)
 {
 	int step1 = 2500, step2 = 10000;
 	int trash_step =  size;
@@ -160,8 +157,8 @@ vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>&
 		//magnet.at(k) = Magnet(array, size);
 		energy.at(k) = originalEnergy(array, size, na, K);
 		nn.at(k) = nnnEne(array, size, na, 1);
-		nnn.at(k) = nnnEne(array, size, na, 2);
-		nnnn.at(k) = nnnEne(array, size, na, 3);
+		//nnn.at(k) = nnnEne(array, size, na, 2);
+		//nnnn.at(k) = nnnEne(array, size, na, 3);
 	}
 }
 
@@ -178,17 +175,15 @@ int main()
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
 	vector<double> energy(10000, 0); 
 	vector<double> nn(10000,0);
-	vector<double> nnn(10000,0);
-	vector<double> nnnn(10000,0);
 	neighbor(near, size);
 
 	ofstream Fileout;
 	Fileout.open("fileout.txt");
 	cout << "Fileout open: " << size << endl;
-	Fileout << "temp ene nn nnn nnnn " << endl;
-	met_cycle(size, temp, near, K, energy, nn, nnn, nnnn);
+	Fileout << "temp ene nn " << endl;
+	met_cycle(size, temp, near, K, energy, nn);
 	for (int i = 0; i < 10000; i++){
-		Fileout << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
+		Fileout << temp << " " << energy.at(i) << " " << nn.at(i) << " " << endl;
 	}
 	Fileout.close();
 

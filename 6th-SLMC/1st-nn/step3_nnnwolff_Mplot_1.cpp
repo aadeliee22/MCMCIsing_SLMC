@@ -70,7 +70,7 @@ double originalEnergy(vector<double>& v, int size, vector < vector <double> >& n
 double effEnergy(vector<double>& v, int size, vector < vector <double> >& na, vector<double>& J)
 {
 	double e = J[0];
-	for (int i = 1; i < 4; i++){
+	for (int i = 1; i < 2; i++){
 		e = e + J[i] * nnnEne(v, size, na, i);
 	}
 	return e;
@@ -91,18 +91,6 @@ vector < vector <double> >& na, double T, double K, vector<double>& J)
 			if (v[na[i][2]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
 			if (v[na[i][3]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
 		}
-		if (padd[1]!=0){
-			if (v[na[i][4]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][4]); v[na[i][4]] = newspin; }
-			if (v[na[i][5]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][5]); v[na[i][5]] = newspin; }
-			if (v[na[i][6]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][6]); v[na[i][6]] = newspin; }
-			if (v[na[i][7]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][7]); v[na[i][7]] = newspin; }
-		}
-		if (padd[2]!=0){
-			if (v[na[i][8]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][8]); v[na[i][8]] = newspin; }
-			if (v[na[i][9]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][9]); v[na[i][9]] = newspin; }
-			if (v[na[i][10]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][10]); v[na[i][10]] = newspin; }
-			if (v[na[i][11]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][11]); v[na[i][11]] = newspin; }
-		}
 		sp++;
 		if (sp >= stack.size()) break;
 		i = stack.at(sp);
@@ -115,7 +103,7 @@ vector < vector <double> >& na, double T, double K, vector<double>& J)
 	}
 }
 void wolff_cycle(int size, double T, double& mag, double& mag_sus, double& mag2, double& mag4,
-vector < vector <double> >& na, double K, vector<double>& J,
+double& ene, double& sp_heat, vector < vector <double> >& na, double K, vector<double>& J,
 vector<double>& padd, double Tstart, double clsizef)
 {
 	int step1 = 2500, step2 = 10000;
@@ -129,40 +117,47 @@ vector<double>& padd, double Tstart, double clsizef)
 
 	for (int k = 0; k < step1*scale; k++) { Cluster_1step(array, size, padd, na, T, K, J); }
 	vector<double> magnet(step2, 0);
+	vector<double> energy(step2, 0);
 	for (int k = 0; k < step2; k++) {
 		for (int h = 0; h < trash_step; h++) {
 			Cluster_1step(array, size, padd, na, T, K, J);
 		}
 		magnet.at(k) = Magnet(array, size);
+		energy.at(k) = originalEnergy(array, size, na, K);
 	}
-	double Mag = 0, Mag2 = 0, Mag4 = 0;
-	double a;
+	double Mag = 0, Mag2 = 0, Mag4 = 0, Ene = 0, Ene2 = 0;
+	double a, b;
 	for (vector<int>::size_type i = 0; i < magnet.size(); i++) {
 		a = magnet.at(i);
+		b = energy.at(i);
 		Mag = Mag + a;
 		Mag2 = Mag2 + a*a;
 		Mag4 = Mag4 + a*a*a*a;
+		Ene = Ene + b;
+		Ene2 = Ene2 + b*b;
 	}
 
 	mag = Mag / step2;
+	ene = Ene / step2;
 	mag_sus = size*size * (Mag2 / step2 - (Mag/step2)*(Mag/step2)) / T;
 	mag2 = Mag2 / step2;
 	mag4 = Mag4 / step2;
+	sp_heat = (Ene2 / step2 - (Ene/step2)*(Ene/step2)) / (size*size*T*T);
 }
 int main()
 {
 	random_device rd; gen.seed(rd);
 	double K = 0.2;
-	vector<double> J(4);
+	vector<double> J(2);
 	int size = 10; double temp;
 	//filein.txt format: temperature \n E0 \n J1 \n J2 \n J3
 	ifstream Filein; Filein.open("filein.txt"); 
-	for (int i = 0; i < 4; i++){ Filein >> J[i]; }
+	for (int i = 0; i < 2; i++){ Filein >> J[i]; }
 	Filein >> temp;
 
 	double Tstart = 2.3 * J[1], clsizef = 1.86 * J[1] * J[1] + 1;
-	if (J[2]>0) { Tstart = Tstart + 0.2 * (J[2]/0.05); clsizef = clsizef + 1.6*J[2]/0.02; }
-	double Mag = 0, mag_sus = 0, Mag2 = 0, Mag4 = 0;
+	//if (J[2]>0) { Tstart = Tstart + 0.2 * (J[2]/0.05); clsizef = clsizef + 1.6*J[2]/0.02; }
+	double Mag = 0, mag_sus = 0, Mag2 = 0, Mag4 = 0, Ene = 0, sp_heat = 0;
 
 	clock_t start = clock();
 
@@ -177,8 +172,9 @@ int main()
 		vector<double> padd(3);
 		for (int i = 0; i < 3; i++){ padd.at(i) = 1 - exp(-2 * J[i+1] / (0.005 * k)); }
 		for (int h = 0; h < 3; h++) {
-			wolff_cycle(size, 0.005 * k, Mag, mag_sus, Mag2, Mag4, near, K, J, padd, Tstart, clsizef);
-			Fileout << size << " " << 0.005 * k << " " << Mag << " " << Mag2 << " " << Mag4 << " " << mag_sus << " " << endl;
+			wolff_cycle(size, 0.005 * k, Mag, mag_sus, Mag2, Mag4, Ene, sp_heat, near, K, J, padd, Tstart, clsizef);
+			Fileout << size << " " << 0.005 * k << " " << Mag << " " << Mag2 << " " << Mag4 
+			<< " " << mag_sus << " " << Ene << " " << sp_heat << " " << endl;
 		}
 		cout << 0.005 * k << " end" << endl;
 	}

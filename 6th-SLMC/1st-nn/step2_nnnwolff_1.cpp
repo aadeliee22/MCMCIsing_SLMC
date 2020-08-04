@@ -70,7 +70,7 @@ double originalEnergy(vector<double>& v, int size, vector < vector <double> >& n
 double effEnergy(vector<double>& v, int size, vector < vector <double> >& na, vector<double>& J)
 {
 	double e = J[0];
-	for (int i = 1; i < 4; i++){
+	for (int i = 1; i < 2; i++){
 		e = e + J[i] * nnnEne(v, size, na, i);
 	}
 	return e;
@@ -91,18 +91,6 @@ vector < vector <double> >& na, double T, double K, vector<double>& J)
 			if (v[na[i][2]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
 			if (v[na[i][3]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
 		}
-		if (padd[1]!=0){
-			if (v[na[i][4]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][4]); v[na[i][4]] = newspin; }
-			if (v[na[i][5]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][5]); v[na[i][5]] = newspin; }
-			if (v[na[i][6]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][6]); v[na[i][6]] = newspin; }
-			if (v[na[i][7]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][7]); v[na[i][7]] = newspin; }
-		}
-		if (padd[2]!=0){
-			if (v[na[i][8]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][8]); v[na[i][8]] = newspin; }
-			if (v[na[i][9]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][9]); v[na[i][9]] = newspin; }
-			if (v[na[i][10]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][10]); v[na[i][10]] = newspin; }
-			if (v[na[i][11]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][11]); v[na[i][11]] = newspin; }
-		}
 		sp++;
 		if (sp >= stack.size()) break;
 		i = stack.at(sp);
@@ -115,17 +103,17 @@ vector < vector <double> >& na, double T, double K, vector<double>& J)
 	}
 }
 void wolff_cycle(int size, double T, vector < vector <double> >& na, double K, vector<double>& J,
-vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
+vector<double>& energy, vector<double>& nn)
 {
 	int step1 = 2500, step2 = 10000;
 	int scale=1; double Tstart = 2.3 * J[1], clsizef = 1.86 * J[1] * J[1] + 1;
-	if (J[2]>0) { Tstart = Tstart + 0.2 * (J[2]/0.05); clsizef = clsizef + 1.6*J[2]/0.02; }
+	//if (J[2]>0) { Tstart = Tstart + 0.2 * (J[2]/0.05); clsizef = clsizef + 1.6*J[2]/0.02; }
 	double slope = (double(size)*size/clsizef)/(5-Tstart);
 	if (T>Tstart) { scale = slope * (T - Tstart); if (scale == 0) scale = 1; }
 	int trash_step = scale*(sqrt(size));
 
-	vector<double> padd(3);
-	for (int i = 0; i < 3; i++){ padd.at(i) = 1 - exp(-2 * J[i+1] / T); }
+	vector<double> padd(1);
+	for (int i = 0; i < 1; i++){ padd.at(i) = 1 - exp(-2 * J[i+1] / T); }
 	vector<double> array(size * size, 0);
 	initialize(array, size);
 
@@ -137,19 +125,19 @@ vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>&
 		//magnet.at(k) = Magnet(array, size);
 		energy.at(k) = originalEnergy(array, size, na, K);
 		nn.at(k) = nnnEne(array, size, na, 1);
-		nnn.at(k) = nnnEne(array, size, na, 2);
-		nnnn.at(k) = nnnEne(array, size, na, 3);
+		//nnn.at(k) = nnnEne(array, size, na, 2);
+		//nnnn.at(k) = nnnEne(array, size, na, 3);
 	}
 }
 int main()
 {
 	random_device rd; gen.seed(rd);
 	double K = 0.2;
-	vector<double> J(4);
+	vector<double> J(2);
 	int size = 10; double temp;
 	//filein.txt format: temperature \n E0 \n J1 \n J2 \n J3
 	ifstream Filein; Filein.open("filein.txt"); 
-	for (int i = 0; i < 4; i++){ Filein >> J[i]; }
+	for (int i = 0; i < 2; i++){ Filein >> J[i]; }
 	Filein >> temp;
 	temp = temp - 0.2;
 
@@ -158,17 +146,15 @@ int main()
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
 	vector<double> energy(10000, 0); 
 	vector<double> nn(10000,0);
-	vector<double> nnn(10000,0);
-	vector<double> nnnn(10000,0);
 	neighbor(near, size);
 
 	ofstream Fileout; 
 	Fileout.open("fileout.txt");
 	cout << "File open: " << temp << endl;
-	Fileout << "temp ene nn nnn nnnn " << endl;
-	wolff_cycle(size, temp, near, K, J, energy, nn, nnn, nnnn);
+	Fileout << "temp ene nn " << endl;
+	wolff_cycle(size, temp, near, K, J, energy, nn);
 	for (int i = 0; i < 10000; i++){
-		Fileout << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
+		Fileout << temp << " " << energy.at(i) << " " << nn.at(i) << " " << endl;
 	}
 	Fileout.close();
 
