@@ -168,6 +168,7 @@ int main()
 	gen.seed(rd);
 	double K = 0.2;
 	int size = 10;
+	int nth = 2; // 0 < nth <= 3
 	double temp = 4.493;
 
 	clock_t start = clock();
@@ -181,14 +182,14 @@ int main()
 
 	ofstream Fileout;
 	Fileout.open("fileout.txt");
-	cout << "Fileout open: " << size << endl;
-	Fileout << "temp ene nn nnn nnnn " << endl;
+	cout << "Fileout open: " << temp << ", " << nth << endl;
+	Fileout << "nth temp ene nn nnn nnnn " << endl;
 	met_cycle(size, temp, near, K, energy, nn, nnn, nnnn);
 	for (int i = 0; i < 10000; i++){
-		Fileout << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
+		Fileout << nth << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
 	}
 	Fileout.close();
 
-	cout << endl << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
+	cout << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
 	return 0;
 }
