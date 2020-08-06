@@ -41,7 +41,7 @@ void neighbor(vector < vector <double> >& na, int size)
 		na[i][7] = (na_3 + size) % sizes;
 	}
 }
-void Cluster_1step(vector<double>& v, int size, double padd1, double padd2, vector < vector <double> >& na, double& clustersize)
+void Cluster_1step(vector<double>& v, int size, vector<double>& padd, vector < vector <double> >& na, double& clustersize)
 {
 	gen.seed(rd);
 	int i = size * size * dis(gen);
@@ -51,31 +51,49 @@ void Cluster_1step(vector<double>& v, int size, double padd1, double padd2, vect
 	v[i] = newspin;
 	int sp = 0;
 	while (1) {
-		if (v[na[i][0]] == oldspin && dis(gen) < padd1) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
-		if (v[na[i][1]] == oldspin && dis(gen) < padd1) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
-		if (v[na[i][2]] == oldspin && dis(gen) < padd1) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
-		if (v[na[i][3]] == oldspin && dis(gen) < padd1) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
-		if (v[na[i][4]] == oldspin && dis(gen) < padd2) { stack.push_back(na[i][4]); v[na[i][4]] = newspin; }
-		if (v[na[i][5]] == oldspin && dis(gen) < padd2) { stack.push_back(na[i][5]); v[na[i][5]] = newspin; }
-		if (v[na[i][6]] == oldspin && dis(gen) < padd2) { stack.push_back(na[i][6]); v[na[i][6]] = newspin; }
-		if (v[na[i][7]] == oldspin && dis(gen) < padd2) { stack.push_back(na[i][7]); v[na[i][7]] = newspin; }
+		if (padd[0]>0){
+			if (v[na[i][0]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
+			if (v[na[i][1]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
+			if (v[na[i][2]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
+			if (v[na[i][3]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
+		}
+		if (padd[1]>0){
+			if (v[na[i][4]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][4]); v[na[i][4]] = newspin; }
+			if (v[na[i][7]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][7]); v[na[i][7]] = newspin; }
+			if (v[na[i][5]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][5]); v[na[i][5]] = newspin; }
+			if (v[na[i][6]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][6]); v[na[i][6]] = newspin; }
+		}
+		if (padd[0]<0){
+			if (v[na[i][0]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][0]); v[na[i][0]] = oldspin; }
+			if (v[na[i][1]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][1]); v[na[i][1]] = oldspin; }
+			if (v[na[i][2]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][2]); v[na[i][2]] = oldspin; }
+			if (v[na[i][3]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][3]); v[na[i][3]] = oldspin; }
+		}
+		if (padd[1]<0){
+			if (v[na[i][4]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][4]); v[na[i][4]] = oldspin; }
+			if (v[na[i][7]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][7]); v[na[i][7]] = oldspin; }
+			if (v[na[i][5]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][5]); v[na[i][5]] = oldspin; }
+			if (v[na[i][6]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][6]); v[na[i][6]] = oldspin; }
+		}
 		sp++;
 		if (sp >= stack.size()) break;
 		i = stack.at(sp);
 	}
 	clustersize = stack.size();
 }
-void MC_1cycle_clustersize(int size, double T, vector < vector <double> >& na, double K, double& cl_size)
+void MC_1cycle_clustersize(int size, double T, vector < vector <double> >& na, vector<double>& J, double& cl_size)
 {
-	int step1 = 5000, step2 = 5000;
-	double padd1 = 1 - exp(-2 * K / T);
-	double padd2 = 0;
+	int step1 = 1000, step2 = 5000;
+	vector<double> padd(4, 0);
+	padd[0] = 1 - exp(-2 * J[0] / T); padd[1] = 1 - exp(-2 * J[1] / T);
+	padd[2] = 1 - exp(2 * J[0] / T); padd[3] = 1 - exp(2 * J[1] / T);
+
 	double clustersize;
 	vector<double> array(size * size, 0);
 	initialize(array, size);
-	for (int k = 0; k < step1; k++) { Cluster_1step(array, size, padd1, padd2, na, clustersize); }
+	for (int k = 0; k < step1; k++) { Cluster_1step(array, size, padd, na, clustersize); }
 	for (int k = 0; k < step2; k++) {
-		Cluster_1step(array, size, padd1, padd2, na, clustersize);
+		Cluster_1step(array, size, padd, na, clustersize);
 		cl_size = clustersize + cl_size;
 	}
 	cl_size = cl_size / step2;
@@ -86,25 +104,29 @@ int main()
 {
 	random_device rd;
 	gen.seed(rd);
-	double K;
-	int size=20;
+	vector<double> J(2, 0);
+	int size=10;
 	//cout << "What size?: ";	cin >> size;
 
 	clock_t start = clock();
 
 	ofstream File;
 	File.open("clustersize.txt");
-	File << "temp cl_size size: " << size << " " << endl;
+	File << "J0 J1 temp cl_size size: " << size << " " << endl;
 	vector < vector <double> > near(size * size, vector<double>(8, 0));
 	neighbor(near, size);
 	for (int j = 0; j < 9; j++){
-		K = 0.8 + 0.05*double(j);
-		for (int k = 10; k < 51; k++) {
-			double cl_size = 0;
-			MC_1cycle_clustersize(size, 0.1*k, near, K, cl_size);
-			File << 0.1 * k << " " << cl_size << endl;
+		J[0] = 1.3 - 0.05 * j;
+		for (int h = 0; h < 7; h++){
+			J[1] = 0.12 - 0.04 * h;
+			for (int k = 15; k < 51; k++) {
+				double cl_size = 0;
+				MC_1cycle_clustersize(size, 0.1*k, near, J, cl_size);
+				File << J[0] << " " << J[1] << " " << 0.1 * k << " " << cl_size << endl;
+			} 
+			cout << "J1 " << J[1] << endl;
 		}
-		cout << K << " done" << endl;
+		cout << "*J0 " << J[0] << endl;		
 	}
 	File.close();
 

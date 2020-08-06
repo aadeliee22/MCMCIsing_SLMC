@@ -82,23 +82,41 @@ vector < vector <double> >& na, double T, double K, vector<double>& J, int nth)
 	double oldspin = v[i]; double newspin = -v[i]; v[i] = newspin;
 	int sp = 0;
 	while (1) {
-		if (padd[0]!=0){
+		if (padd[0]>0){
 			if (v[na[i][0]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
 			if (v[na[i][1]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
 			if (v[na[i][2]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
 			if (v[na[i][3]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
 		}
-		if (padd[1]!=0){
+		if (padd[1]>0){
 			if (v[na[i][4]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][4]); v[na[i][4]] = newspin; }
+			if (v[na[i][7]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][7]); v[na[i][7]] = newspin; }
 			if (v[na[i][5]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][5]); v[na[i][5]] = newspin; }
 			if (v[na[i][6]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][6]); v[na[i][6]] = newspin; }
-			if (v[na[i][7]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][7]); v[na[i][7]] = newspin; }
 		}
-		if (padd[2]!=0){
+		if (padd[2]>0){
 			if (v[na[i][8]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][8]); v[na[i][8]] = newspin; }
 			if (v[na[i][9]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][9]); v[na[i][9]] = newspin; }
 			if (v[na[i][10]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][10]); v[na[i][10]] = newspin; }
 			if (v[na[i][11]] == oldspin && dis(gen) < padd[2]) { stack.push_back(na[i][11]); v[na[i][11]] = newspin; }
+		}
+		if (padd[0]<0){
+			if (v[na[i][0]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][0]); v[na[i][0]] = oldspin; }
+			if (v[na[i][1]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][1]); v[na[i][1]] = oldspin; }
+			if (v[na[i][2]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][2]); v[na[i][2]] = oldspin; }
+			if (v[na[i][3]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][3]); v[na[i][3]] = oldspin; }
+		}
+		if (padd[1]<0){
+			if (v[na[i][4]] == newspin && dis(gen) < padd[4]) { stack.push_back(na[i][4]); v[na[i][4]] = oldspin; }
+			if (v[na[i][7]] == newspin && dis(gen) < padd[4]) { stack.push_back(na[i][7]); v[na[i][7]] = oldspin; }
+			if (v[na[i][5]] == newspin && dis(gen) < padd[4]) { stack.push_back(na[i][5]); v[na[i][5]] = oldspin; }
+			if (v[na[i][6]] == newspin && dis(gen) < padd[4]) { stack.push_back(na[i][6]); v[na[i][6]] = oldspin; }
+		}
+		if (padd[2]<0){
+			if (v[na[i][8]] == newspin && dis(gen) < padd[5]) { stack.push_back(na[i][8]); v[na[i][8]] = oldspin; }
+			if (v[na[i][9]] == newspin && dis(gen) < padd[5]) { stack.push_back(na[i][9]); v[na[i][9]] = oldspin; }
+			if (v[na[i][10]] == newspin && dis(gen) < padd[5]) { stack.push_back(na[i][10]); v[na[i][10]] = oldspin; }
+			if (v[na[i][11]] == newspin && dis(gen) < padd[5]) { stack.push_back(na[i][11]); v[na[i][11]] = oldspin; }
 		}
 		sp++;
 		if (sp >= stack.size()) break;
@@ -166,7 +184,6 @@ int main()
 	Filein >> temp;
 
 	double Tstart = 2.3 * J[1], clsizef = 1.86 * J[1] * J[1] + 1;
-	if (nth > 1 && J[2]>0) { Tstart = Tstart + 0.2 * (J[2]/0.05); clsizef = clsizef + 1.6*J[2]/0.02; }
 	double Mag = 0, mag_sus = 0, Mag2 = 0, Mag4 = 0, Ene = 0, sp_heat = 0;
 
 	clock_t start = clock();
@@ -178,9 +195,11 @@ int main()
 	Fileout.open("fileout.txt");
 	cout << "Fileout open: " << size << ", " << nth << endl;
 	Fileout << "nth size t m m2 m4 ms e sph " << endl;
-	vector<double> padd(3, 0);
-	for (int k = 300; k < 800; k++) {
-		for (int i = 0; i < nth; i++){ padd.at(i) = 1 - exp(-2 * J[i+1] / (0.005 * k)); }
+	vector<double> padd(6, 0);
+	for (int k = 300; k < 700; k++) {
+		for (int i = 0; i < nth; i++){ 
+			padd.at(i) = 1 - exp(-2 * J[i+1] / (0.005 * k)); 
+			padd.at(i+3) = 1 - exp(2 * J[i+1] / (0.005 * k)); }
 		for (int h = 0; h < 3; h++) {
 			wolff_cycle(size, 0.005 * k, Mag, mag_sus, Mag2, Mag4, Ene, sp_heat, near, K, J, padd, Tstart, clsizef), nth;
 			Fileout << nth << " " << size << " " << 0.005 * k << " " << Mag << " " << Mag2 << " " << Mag4 

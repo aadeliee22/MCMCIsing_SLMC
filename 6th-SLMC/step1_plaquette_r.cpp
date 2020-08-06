@@ -168,7 +168,7 @@ int main()
 	gen.seed(rd);
 	double K = 0.2;
 	int size = 20;
-	int nth = 1; // 0 < nth <= 3
+	int nth = 3; // 0 < nth <= 3
 	double temp = 4.493;
 
 	clock_t start = clock();

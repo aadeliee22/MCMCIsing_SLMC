@@ -58,15 +58,15 @@ double Magnet(vector<double>& v, int size)
 	m = abs(m) / (v.size()); //absolute value of average spin
 	return m;
 }
-double Energy(vector<double>& v, int size, vector < vector <double> >& na, double J0, double J1, double J2)
+double Energy(vector<double>& v, int size, vector < vector <double> >& na, vector<double>& J)
 {
-	double e = J0;
+	double e = J[0];
 	for (int i = 0; i < size * size; i++) {
-		e = e - v[i] * (J1 * (v[na[i][1]] + v[na[i][3]]) + J2 * v[na[i][1]] * v[na[i][3]] * v[na[i][7]]);
+		e = e - v[i] * (J[1] * (v[na[i][1]] + v[na[i][3]]) + J[2] * v[na[i][1]] * v[na[i][3]] * v[na[i][7]]);
 	}
 	return e;
 }
-void Cluster_1step(vector<double>& v, int size, double padd1, double padd2, vector < vector <double> >& na)
+void Cluster_1step(vector<double>& v, int size, vector<double>& padd, vector < vector <double> >& na)
 {
 	gen.seed(rd);
 	int i = size * size * dis(gen);
@@ -76,20 +76,36 @@ void Cluster_1step(vector<double>& v, int size, double padd1, double padd2, vect
 	v[i] = newspin;
 	int sp = 0;
 	while (1) {
-		if (v[na[i][0]] == oldspin && dis(gen) < padd1) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
-		if (v[na[i][1]] == oldspin && dis(gen) < padd1) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
-		if (v[na[i][2]] == oldspin && dis(gen) < padd1) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
-		if (v[na[i][3]] == oldspin && dis(gen) < padd1) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
-		if (v[na[i][4]] == oldspin && dis(gen) < padd2) { stack.push_back(na[i][4]); v[na[i][4]] = newspin; }
-		if (v[na[i][5]] == oldspin && dis(gen) < padd2) { stack.push_back(na[i][5]); v[na[i][5]] = newspin; }
-		if (v[na[i][6]] == oldspin && dis(gen) < padd2) { stack.push_back(na[i][6]); v[na[i][6]] = newspin; }
-		if (v[na[i][7]] == oldspin && dis(gen) < padd2) { stack.push_back(na[i][7]); v[na[i][7]] = newspin; }
+		if (padd[0]>0){
+			if (v[na[i][0]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
+			if (v[na[i][1]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
+			if (v[na[i][2]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
+			if (v[na[i][3]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
+		}
+		if (padd[1]>0){
+			if (v[na[i][4]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][4]); v[na[i][4]] = newspin; }
+			if (v[na[i][7]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][7]); v[na[i][7]] = newspin; }
+			if (v[na[i][5]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][5]); v[na[i][5]] = newspin; }
+			if (v[na[i][6]] == oldspin && dis(gen) < padd[1]) { stack.push_back(na[i][6]); v[na[i][6]] = newspin; }
+		}
+		if (padd[0]<0){
+			if (v[na[i][0]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][0]); v[na[i][0]] = oldspin; }
+			if (v[na[i][1]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][1]); v[na[i][1]] = oldspin; }
+			if (v[na[i][2]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][2]); v[na[i][2]] = oldspin; }
+			if (v[na[i][3]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][3]); v[na[i][3]] = oldspin; }
+		}
+		if (padd[1]<0){
+			if (v[na[i][4]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][4]); v[na[i][4]] = oldspin; }
+			if (v[na[i][7]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][7]); v[na[i][7]] = oldspin; }
+			if (v[na[i][5]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][5]); v[na[i][5]] = oldspin; }
+			if (v[na[i][6]] == newspin && dis(gen) < padd[3]) { stack.push_back(na[i][6]); v[na[i][6]] = oldspin; }
+		}
 		sp++;
 		if (sp >= stack.size()) break;
 		i = stack.at(sp);
 	}
 }
-void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, double& mag4, vector < vector <double> >& na, double J0, double J1, double J2)
+void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, double& mag4, vector < vector <double> >& na, vector<double>& J)
 {
 	int step1 = 2000, step2 = 10000;
 	int scale=1;
@@ -100,17 +116,18 @@ void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, d
 	}
 	int trash_step = scale*(sqrt(size));
 
-	double padd1 = 1 - exp(-2 * J1 / T);
-	double padd2 = 1 - exp(-2 * J2 / T);
+	vector<double> padd(4, 0);
+	padd[0] = 1 - exp(-2 * J[1] / T); padd[1] = 1 - exp(-2 * J[2] / T);
+	padd[2] = 1 - exp(2 * J[1] / T); padd[3] = 1 - exp(2 * J[2] / T);
 	vector<double> array(size * size, 0);
 	initialize(array, size);
 
-	for (int k = 0; k < step1*scale; k++) { Cluster_1step(array, size, padd1, padd2, na); }
+	for (int k = 0; k < step1*scale; k++) { Cluster_1step(array, size, padd, na); }
 
 	vector<double> magnet(step2, 0);
 	for (int k = 0; k < step2; k++) {
 		for (int h = 0; h < trash_step; h++) {
-			Cluster_1step(array, size, padd1, padd2, na);
+			Cluster_1step(array, size, padd, na);
 		}
 		magnet.at(k) = Magnet(array, size);
 	}
@@ -129,7 +146,7 @@ void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, d
 	mag2 = Mag2 / step2;
 	mag4 = Mag4 / step2;
 }
-void MC_1cycle_graphing(int size, double T, vector < vector <double> >& na, double J0, double J1, double J2)
+void MC_1cycle_graphing(int size, double T, vector < vector <double> >& na, vector<double>& J)
 {
 	int step1 = 1000, step2 = 5000;
 	int scale=1;
@@ -140,25 +157,26 @@ void MC_1cycle_graphing(int size, double T, vector < vector <double> >& na, doub
 	}
 	int trash_step = scale*(sqrt(size));
 
-	double padd1 = 1 - exp(-2 * J1 / T);
-	double padd2 = 1 - exp(-2 * J2 / T);
-	vector<double> array(size * size, 0);
+	vector<double> padd(4, 0);
+	padd[0] = 1 - exp(-2 * J[1] / T); padd[1] = 1 - exp(-2 * J[2] / T);
+	padd[2] = 1 - exp(2 * J[1] / T); padd[3] = 1 - exp(2 * J[2] / T);
+vector<double> array(size * size, 0);
 
 	initialize(array, size);
 	cout << "Initial state: ";
 	color(array, size);
 	cout << endl;
 	cout << "Magnetization: " << Magnet(array, size) << endl;
-	cout << "Energy (H): " << Energy(array, size, na, J0, J1, J2) << endl;
+	cout << "Energy (H): " << Energy(array, size, na, J) << endl;
 
-	for (int k = 0; k < step1; k++) { Cluster_1step(array, size, padd1, padd2, na); }
+	for (int k = 0; k < step1; k++) { Cluster_1step(array, size, padd, na); }
 
 	vector<double> magnet(step2, 0);
 	vector<double> energy(step2, 0);
 	for (int k = 0; k < step2; k++){
-		Cluster_1step(array, size, padd1, padd2, na);
+		Cluster_1step(array, size, padd, na);
 		magnet.at(k) = Magnet(array, size);
-		energy.at(k) = Energy(array, size, na, J0, J1, J2);
+		energy.at(k) = Energy(array, size, na, J);
 	}
 
 	double Mag = 0, Mag2 = 0, Ene = 0, Ene2 = 0;
@@ -184,7 +202,8 @@ int main()
 {
 	random_device rd;
 	gen.seed(rd);
-	double J0 = 0, J1 = 1, J2 = 0.1;
+	vector<double> J(3, 0);
+	J[0] = 0; J[1] = 0.85; J[2] = -0.12;
 	int size; double temp;
 	cout << "What size?: ";	cin >> size;
 	cout << "What T?: ";	cin >> temp;
@@ -195,7 +214,7 @@ int main()
 
 	vector < vector <double> > near(size * size, vector<double>(8, 0));
 	neighbor(near, size);
-	MC_1cycle_graphing(size, temp, near, J0, J1, J2);
+	MC_1cycle_graphing(size, temp, near, J);
 
 
 	cout << endl << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
