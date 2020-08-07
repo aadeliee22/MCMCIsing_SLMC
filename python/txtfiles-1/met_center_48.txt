@@ -1,4 +1,4 @@
-size temperature m mag_sus 
+size temperature m ms 
 48 2.2 0.783769 5.27958 
 48 2.2 0.785191 5.02232 
 48 2.2 0.784768 5.11562 
