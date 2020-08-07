@@ -162,7 +162,7 @@ int main()
 	random_device rd; gen.seed(rd);
 	double K = 0.2;
 	int nth; //How much nearest neighbors are we considering?
-	int size = 20; double temp;
+	int size = 10; double temp;
 	//filein.txt format: temperature \n E0 \n J1 \n J2 \n J3
 	ifstream Filein; Filein.open("filein.txt"); 
 	Filein >> nth;

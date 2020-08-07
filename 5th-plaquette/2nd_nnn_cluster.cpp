@@ -203,7 +203,8 @@ int main()
 	random_device rd;
 	gen.seed(rd);
 	vector<double> J(3, 0);
-	J[0] = 0; J[1] = 0.85; J[2] = -0.12;
+	J[0] = 0; J[1] = 1; 
+	cout << "J2: "; cin >> J[2];
 	int size; double temp;
 	cout << "What size?: ";	cin >> size;
 	cout << "What T?: ";	cin >> temp;
