@@ -66,24 +66,17 @@ vector < vector <double> >& na, double T, vector<double>& J, int nth)
 	gen.seed(rd);
 	vector<double> v = array;
 	int i = size * size * dis(gen);
-	vector<int> stack(1, i);
+	vector<int> stack(size*size, 0);
+	stack[0] = i;
 	double oldspin = v[i]; double newspin = -v[i]; v[i] = newspin;
-	int sp = 0;
+	int sp = 0, sh = 0;
 	while (1) {
-		if (padd[0]>0){
-			if (v[na[i][0]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
-			if (v[na[i][1]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
-			if (v[na[i][2]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
-			if (v[na[i][3]] == oldspin && dis(gen) < padd[0]) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
-		}
-		if (padd[0]<0){
-			if (v[na[i][0]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][0]); v[na[i][0]] = oldspin; }
-			if (v[na[i][1]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][1]); v[na[i][1]] = oldspin; }
-			if (v[na[i][2]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][2]); v[na[i][2]] = oldspin; }
-			if (v[na[i][3]] == newspin && dis(gen) < padd[2]) { stack.push_back(na[i][3]); v[na[i][3]] = oldspin; }
-		}
+		if (v[na[i][0]] == oldspin && dis(gen) < padd[0]) { sh++; stack.at(sh) = na[i][0]; v[na[i][0]] = newspin; }
+		if (v[na[i][1]] == oldspin && dis(gen) < padd[0]) { sh++; stack.at(sh) = na[i][1]; v[na[i][1]] = newspin; }
+		if (v[na[i][2]] == oldspin && dis(gen) < padd[0]) { sh++; stack.at(sh) = na[i][2]; v[na[i][2]] = newspin; }
+		if (v[na[i][3]] == oldspin && dis(gen) < padd[0]) { sh++; stack.at(sh) = na[i][3]; v[na[i][3]] = newspin; }
 		sp++;
-		if (sp >= stack.size()) break;
+		if (sp > sh) break;
 		i = stack.at(sp);
 	}
 	double ediff = (Energy(v, size, na, J, nth) - Energy(v, size, na, J, 1)) - (Energy(array, size, na, J, nth) - Energy(array, size, na, J, 1));
@@ -143,31 +136,31 @@ int main()
 
 	double Tstart = 2.3 * J[1], clsizef = 1.86 * J[1] * J[1] + 1;
 	double Mag = 0, mag_sus = 0, Mag2 = 0, Mag4 = 0, Ene = 0, sp_heat = 0;
-
+	double temp = 0;
+	
 	clock_t start = clock();
 
 	vector < vector <double> > near(size * size, vector<double>(8, 0));
 	neighbor(near, size);
 
 	ofstream Fileout; 
-	Fileout.open("cluster_1_eff.txt");
-	cout << "File1_eff open: " << J[2] << endl;
+	Fileout.open("cluster_eff_2.txt");
+	cout << "File eff open: " << J[2] << endl;
 	Fileout << "J2 temperature m m2 m4 ms e sp_h " << endl;
-	vector<double> padd(4, 0);
-	for (int m = 0; m<8; m++){
-		J[2] = 0.2 - m*0.05;
-		for (int k = 300; k < 700; k++) {
-			for (int i = 0; i < nth; i++){ 
-				padd.at(i) = 1 - exp(-2 * J[i+1] / (0.005 * k)); 
-				padd.at(i+2) = 1 - exp(2 * J[i+1] / (0.005 * k)); }
-			for (int h = 0; h < 3; h++) {
-				wolff_cycle(size, 0.005 * k, Mag, mag_sus, Mag2, Mag4, Ene, sp_heat, near, J, padd, Tstart, clsizef, nth);
-				Fileout << J[2] << " " << 0.005 * k << " " << Mag << " " << Mag2 << " " << Mag4 
+	vector<double> padd(1, 0);
+	for (int m = 0; m < 9; m++){
+		J[2] = 0.2 - 0.05 * m;
+		for (int k = 200; k < 700; k++) {
+			temp = 0.005 * k;
+			padd[0] = 1 - exp(-2 * J[1] / temp);
+			for (int h = 0; h < 2; h++) {
+				wolff_cycle(size, temp, Mag, mag_sus, Mag2, Mag4, Ene, sp_heat, near, J, padd, Tstart, clsizef, nth);
+				Fileout << J[2] << " " << temp << " " << Mag << " " << Mag2 << " " << Mag4 
 				<< " " << mag_sus << " " << Ene << " " << sp_heat << " " << endl;
 			}
 		}
+		cout << J[2] << " end" << endl;
 	}
-	
 	Fileout.close();
 
 	cout << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;

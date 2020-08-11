@@ -33,6 +33,10 @@ void neighbor(vector < vector <double> >& na, int size)
 		na[i][5] = (na_3 + size * (size - 1)) % sizes;
 		na[i][6] = (na_2 + size) % sizes;
 		na[i][7] = (na_3 + size) % sizes;
+		na[i][8] = (i + size * (size - 2)) % sizes;
+		na[i][9] = (i + 2 * size) % sizes;
+		na[i][10] = (i - 2 + size) % size + (i / size) * size;
+		na[i][11] = (i + 2) % size + (i / size) * size;
 	}
 }
 double Magnet(vector<double>& v, int size)
@@ -60,14 +64,9 @@ double Energy(vector<double>& v, int size, vector < vector <double> >& na, vecto
 	}
 	return e;
 }
-double delU1(vector<double>& v, int size, int i, vector < vector <double> >& na)
+double delU(vector<double>& v, int size, int i, vector < vector <double> >& na, int ith)
 {
-	int E = 2 * v[i] * (v[na[i][0]] + v[na[i][1]] + v[na[i][2]] + v[na[i][3]]);
-	return E;
-}
-double delU2(vector<double>& v, int size, int i, vector < vector <double> >& na)
-{
-	double E = 2 * v[i] * (v[na[i][4]] + v[na[i][5]] + v[na[i][6]] + v[na[i][7]] );
+	double E = 2 * v[i] * (v[na[i][4*ith-4]] + v[na[i][4*ith-3]] + v[na[i][4*ith-2]] + v[na[i][4*ith-1]]);
 	return E;
 }
 double exp_delU(double E, double* expE)
@@ -82,51 +81,61 @@ double exp_delU(double E, double* expE)
 }
 void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double> >& na, vector<double>& J)
 {
-	double Ediff;
-	double Ediff1;
-	double Ediff2;
+	double Ediff, Ediff1, Ediff2, Ediff3;
 	gen.seed(rd);
 	for (int i = 0; i < size; i=i+2) {
 		for (int j = 0; j < size; j=j+2) {
-			Ediff1 = delU1(v, size, size * i + j, na);
-			Ediff2 = delU2(v, size, size * i + j, na);
-			Ediff = Ediff1 + Ediff2 * J[2];
+			Ediff1 = delU(v, size, size * i + j, na, 1);
+			Ediff2 = delU(v, size, size * i + j, na, 2);
+			Ediff3 = delU(v, size, size * i + j, na, 3);
+			Ediff = Ediff1 * J[1] + Ediff2 * J[2] + Ediff3 * J[3];
 			if (Ediff <= 0) v[size * i + j] = -v[size * i + j];
 			else {
-				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), J[2])) v[size * i + j] = -v[size * i + j];
+				if (dis(gen) <= exp_delU(Ediff1, expE) 
+				* pow(exp_delU(Ediff2, expE), J[2]) 
+				* pow(exp_delU(Ediff3, expE), J[3])) v[size * i + j] = -v[size * i + j];
 			}
 		}
 	}
 	for (int i = 0; i < size; i=i+2) {
 		for (int j = 1; j < size; j=j+2) {
-			Ediff1 = delU1(v, size, size * i + j, na);
-			Ediff2 = delU2(v, size, size * i + j, na);
-			Ediff = Ediff1 + Ediff2 * J[2];
+			Ediff1 = delU(v, size, size * i + j, na, 1);
+			Ediff2 = delU(v, size, size * i + j, na, 2);
+			Ediff3 = delU(v, size, size * i + j, na, 3);
+			Ediff = Ediff1 * J[1] + Ediff2 * J[2] + Ediff3 * J[3];
 			if (Ediff <= 0) v[size * i + j] = -v[size * i + j];
 			else {
-				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), J[2])) v[size * i + j] = -v[size * i + j];
+				if (dis(gen) <= exp_delU(Ediff1, expE) 
+				* pow(exp_delU(Ediff2, expE), J[2]) 
+				* pow(exp_delU(Ediff3, expE), J[3])) v[size * i + j] = -v[size * i + j];
 			}
 		}
 	}
 	for (int i = 1; i < size; i=i+2) {
 		for (int j = 0; j < size; j=j+2) {
-			Ediff1 = delU1(v, size, size * i + j, na);
-			Ediff2 = delU2(v, size, size * i + j, na);
-			Ediff = Ediff1 + Ediff2 * J[2];
+			Ediff1 = delU(v, size, size * i + j, na, 1);
+			Ediff2 = delU(v, size, size * i + j, na, 2);
+			Ediff3 = delU(v, size, size * i + j, na, 3);
+			Ediff = Ediff1 * J[1] + Ediff2 * J[2] + Ediff3 * J[3];
 			if (Ediff <= 0) v[size * i + j] = -v[size * i + j];
 			else {
-				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), J[2])) v[size * i + j] = -v[size * i + j];
+				if (dis(gen) <= exp_delU(Ediff1, expE) 
+				* pow(exp_delU(Ediff2, expE), J[2]) 
+				* pow(exp_delU(Ediff3, expE), J[3])) v[size * i + j] = -v[size * i + j];
 			}
 		}
 	}
 	for (int i = 1; i < size; i=i+2) {
 		for (int j = 1; j < size; j=j+2) {
-			Ediff1 = delU1(v, size, size * i + j, na);
-			Ediff2 = delU2(v, size, size * i + j, na);
-			Ediff = Ediff1 + Ediff2 * J[2];
+			Ediff1 = delU(v, size, size * i + j, na, 1);
+			Ediff2 = delU(v, size, size * i + j, na, 2);
+			Ediff3 = delU(v, size, size * i + j, na, 3);
+			Ediff = Ediff1 * J[1] + Ediff2 * J[2] + Ediff3 * J[3];
 			if (Ediff <= 0) v[size * i + j] = -v[size * i + j];
 			else {
-				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), J[2])) v[size * i + j] = -v[size * i + j];
+				if (dis(gen) <= exp_delU(Ediff1, expE) 
+				* pow(exp_delU(Ediff2, expE), J[2]) 
+				* pow(exp_delU(Ediff3, expE), J[3])) v[size * i + j] = -v[size * i + j];
 			}
 		}
 	}
@@ -176,32 +185,38 @@ void MC_1cycle(int size, double T, double& mag, double& mag_sus, double& mag2, d
 int main()
 {
 	random_device rd; gen.seed(rd);
-	int size = 10; int nth = 2;
+	int size = 10; int nth = 3;
 	vector<double> J(nth + 1, 0);
 	J[0] = 0; J[1] = 1;
 
 	double Mag = 0, mag_sus = 0, Mag2 = 0, Mag4 = 0, Ene = 0, sp_heat = 0;
+	double temp = 0;
 
 	clock_t start = clock();
 
-	vector < vector <double> > near(size * size, vector<double>(8, 0));
+	vector < vector <double> > near(size * size, vector<double>(4*nth, 0));
 	neighbor(near, size);
 
 	ofstream File;
-	File.open("met_2.txt");
-	cout << "File_met open: " << J[2] << endl;
-	File << "J2 temperature m m2 m4 ms e sp_h " << endl;
-	for (int m=0; m<8; m++){
-		J[2] = 0.2 - 0.05*m;
-		for (int k = 300; k < 700; k++) {
-			for (int h = 0; h < 2; h++) {
-				MC_1cycle(size, 0.005 * k, Mag, mag_sus, Mag2, Mag4, Ene, sp_heat, near, J, nth);
-				File << J[2] << " " << 0.005 * k << " " << Mag << " " << Mag2 << " " << Mag4 
-				<< " " << mag_sus << " " << Ene << " " << sp_heat << " " << endl;
+	File.open("met_3.txt");
+	cout << "File met3 open: " << endl;
+	File << "J2 J3 temperature m m2 m4 ms e sp_h " << endl;
+	for (int m = 0; m < 5; m++){
+		J[2] = 0.1 - 0.05 * m;
+		for (int n = 0; n < 7; n++){
+			J[3] = 0.075 - 0.025 * n;
+			for (int k = 200; k < 700; k++) {
+				temp = 0.005 * k;
+				for (int h = 0; h < 2; h++) {
+					MC_1cycle(size, temp, Mag, mag_sus, Mag2, Mag4, Ene, sp_heat, near, J, nth);
+					File << J[2] << " " << J[3] << " " << temp << " " << Mag << " " << Mag2 << " " << Mag4 
+					<< " " << mag_sus << " " << Ene << " " << sp_heat << " " << endl;
+				}
 			}
+			cout << J[3] << " end * " << endl;
 		}
+		cout << J[2] << " end " << endl;
 	}
-	
 	File.close();
 
 	cout << endl << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
