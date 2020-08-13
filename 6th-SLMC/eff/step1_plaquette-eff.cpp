@@ -15,19 +15,18 @@ trng::uniform01_dist<> dis;
 
 void initialize(vector<double>& v, int size) //initial -random- state
 {
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			if ((i + j) % 2 == 0) v[size * i + j] = 1;
-			else v[size * i + j] = -1;
-		}
+	for (int i = 0; i < size * size; i++) {
+		v[i] = dis(gen) < 0.5 ? 1 : -1;
 	}
+	
 }
 void neighbor(vector < vector <double> >& na, int size)
 {
 	int sizes = size * size;
-	for (int i = 0; i < size * size; i++) {
-		int na_2 = (i - 1 + size) % size + (i / size) * size;
-		int na_3 = (i + 1) % size + (i / size) * size;
+	int na_2, na_3;
+	for (int i = 0; i < sizes; i++) {
+		na_2 = (i - 1 + size) % size + (i / size) * size;
+		na_3 = (i + 1) % size + (i / size) * size;
 		na[i][0] = (i + size * (size - 1)) % sizes;
 		na[i][1] = (i + size) % sizes;
 		na[i][2] = na_2;
@@ -141,9 +140,9 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 
 }
 void met_cycle(int size, double T, vector < vector <double> >& na, double K, 
-vector<double>& magnet)
+vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
 {
-	int step1 = 2500, step2 = 100000;
+	int step1 = 2500, step2 = 10000;
 	int trash_step =  size;
 	if (T > 2.4 && T < 2.7) trash_step = trash_step * 2;
 
@@ -153,8 +152,14 @@ vector<double>& magnet)
 
 	for (int k = 0; k < step1; k++) { MC_1step(array, size, &expE[0], na, K); }
 	for (int k = 0; k < step2; k++) {
-		MC_1step(array, size, &expE[0], na, K);
-		magnet.at(k) = Magnet(array, size);
+		for (int h = 0; h < trash_step; h++) {
+			MC_1step(array, size, &expE[0], na, K);
+		}
+		//magnet.at(k) = Magnet(array, size);
+		energy.at(k) = originalEnergy(array, size, na, K);
+		nn.at(k) = nnnEne(array, size, na, 1);
+		nnn.at(k) = nnnEne(array, size, na, 2);
+		nnnn.at(k) = nnnEne(array, size, na, 3);
 	}
 }
 
@@ -164,24 +169,28 @@ int main()
 	gen.seed(rd);
 	double K = 0.2;
 	int size = 10;
-	double temp = 2.493;
+	int nth = 2; // 0 < nth <= 3
+	double temp = 4.493;
 
 	clock_t start = clock();
 
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
-	vector<double> magnet(100000, 0); 
+	vector<double> energy(10000, 0); 
+	vector<double> nn(10000,0);
+	vector<double> nnn(10000,0);
+	vector<double> nnnn(10000,0);
 	neighbor(near, size);
 
 	ofstream Fileout;
-	Fileout.open("10_p_at.txt");
-	cout << "Fileout open: " << size << endl;
-	Fileout << "size magnet " << endl;
-	met_cycle(size, temp, near, K, magnet);
-	for (int i = 0; i < 100000; i++){
-		Fileout << size << " " << magnet.at(i) << endl;
+	Fileout.open("fileout_eff.txt");
+	cout << "Fileout open: " << temp << ", " << nth << endl;
+	Fileout << "nth temp ene nn nnn nnnn " << endl;
+	met_cycle(size, temp, near, K, energy, nn, nnn, nnnn);
+	for (int i = 0; i < 10000; i++){
+		Fileout << nth << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
 	}
 	Fileout.close();
 
-	cout << endl << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
+	cout << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
 	return 0;
 }

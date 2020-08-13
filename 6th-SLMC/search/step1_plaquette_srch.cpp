@@ -23,9 +23,10 @@ void initialize(vector<double>& v, int size) //initial -random- state
 void neighbor(vector < vector <double> >& na, int size)
 {
 	int sizes = size * size;
-	for (int i = 0; i < size * size; i++) {
-		int na_2 = (i - 1 + size) % size + (i / size) * size;
-		int na_3 = (i + 1) % size + (i / size) * size;
+	int na_2, na_3;
+	for (int i = 0; i < sizes; i++) {
+		na_2 = (i - 1 + size) % size + (i / size) * size;
+		na_3 = (i + 1) % size + (i / size) * size;
 		na[i][0] = (i + size * (size - 1)) % sizes;
 		na[i][1] = (i + size) % sizes;
 		na[i][2] = na_2;
@@ -181,7 +182,7 @@ int main()
 	neighbor(near, size);
 
 	ofstream Fileout;
-	Fileout.open("fileout.txt");
+	Fileout.open("fileout_srch.txt");
 	cout << "Fileout open: " << temp << ", " << nth << endl;
 	Fileout << "nth temp ene nn nnn nnnn " << endl;
 	met_cycle(size, temp, near, K, energy, nn, nnn, nnnn);
