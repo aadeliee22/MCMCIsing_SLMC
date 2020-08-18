@@ -15,15 +15,15 @@ trng::uniform01_dist<> dis;
 
 void initialize(vector<double>& v, int size) //initial -random- state
 {
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			if ((i + j) % 2 == 0) v[size * i + j] = 1;
-			else v[size * i + j] = -1;
-		}
-	}
-	/*for (int i = 0; i < size * size; i++) {
+	// for (int i = 0; i < size; i++) {
+	// 	for (int j = 0; j < size; j++) {
+	// 		if ((i + j) % 2 == 0) v[size * i + j] = 1;
+	// 		else v[size * i + j] = -1;
+	// 	}
+	// }
+	for (int i = 0; i < size * size; i++) {
 		v[i] = dis(gen) < 0.5 ? 1 : -1;
-	}*/
+	}
 }
 void color(vector<double>& v, int size) //graphing state
 {

@@ -38,10 +38,10 @@ void neighbor(vector < vector <double> >& na, int size)
 		na[i][11] = (i + 2) % size + (i / size) * size;
 	}
 }
-double Magnet(vector<double> v)
+double Magnet(vector<double> v, int size)
 {
 	double m = 0;
-	for (vector<int>::size_type i=0; i<v.size(); i++){
+	for (int i=0; i<size*size; i++){
 		m = m + v.at(i);
 	}
 	m = m / (v.size());
@@ -50,7 +50,7 @@ double Magnet(vector<double> v)
 double originalEnergy(vector<double> v, int size, vector < vector <double> > na, double K)
 {
 	double e = 0;
-	for (int i = 0; i < size*size; i++) {
+	for (int i=0; i<size*size; i++) {
 		e = e - v[i] * (v[na[i][1]] + v[na[i][3]] + K * v[na[i][1]] * v[na[i][3]] * v[na[i][7]]);
 	}
 	return e;
@@ -58,7 +58,7 @@ double originalEnergy(vector<double> v, int size, vector < vector <double> > na,
 double nnnEne(vector<double> v, int size, vector < vector <double> > na, int ith)
 {
 	double nnn = 0;
-	for (int i = 0; i < size*size; i++){
+	for (int i=0; i<size*size; i++){
 		nnn = nnn - v[i] * (v[na[i][4*ith-3]] + v[na[i][4*ith-1]]);
 	}
 	return nnn;
@@ -134,6 +134,7 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 			}
 		}
 	}
+
 }
 void met_cycle(int size, double T, vector < vector <double> > na, double K, 
 vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
@@ -166,17 +167,17 @@ int main()
 	double K = 0.2; double temp = 4.493;
 	int size = 10; int nth = 2; // 0 < nth <= 3
 
+	clock_t start = clock();
+
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
-	neighbor(near, size);
 	vector<double> energy(10000, 0); 
 	vector<double> nn(10000,0);
 	vector<double> nnn(10000,0);
 	vector<double> nnnn(10000,0);
-
-	clock_t start = clock();
+	neighbor(near, size);
 
 	ofstream Fileout;
-	Fileout.open("fileout_srch.txt");
+	Fileout.open("fileout_eff.txt");
 	cout << "Fileout open: " << temp << ", " << nth << endl;
 	Fileout << "nth temp ene nn nnn nnnn " << endl;
 	met_cycle(size, temp, near, K, energy, nn, nnn, nnnn);

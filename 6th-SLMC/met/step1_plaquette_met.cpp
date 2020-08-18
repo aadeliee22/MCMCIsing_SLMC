@@ -47,18 +47,18 @@ double Magnet(vector<double> v)
 	m = m / (v.size());
 	return abs(m);
 }
-double originalEnergy(vector<double> v, int size, vector < vector <double> > na, double K)
+double originalEnergy(vector<double> v, vector < vector <double> > na, double K)
 {
 	double e = 0;
-	for (int i = 0; i < size*size; i++) {
+	for (vector<int>::size_type i=0; i<v.size(); i++) {
 		e = e - v[i] * (v[na[i][1]] + v[na[i][3]] + K * v[na[i][1]] * v[na[i][3]] * v[na[i][7]]);
 	}
 	return e;
 }
-double nnnEne(vector<double> v, int size, vector < vector <double> > na, int ith)
+double nnnEne(vector<double> v, vector < vector <double> > na, int ith)
 {
 	double nnn = 0;
-	for (int i = 0; i < size*size; i++){
+	for (vector<int>::size_type i=0; i<v.size(); i++){
 		nnn = nnn - v[i] * (v[na[i][4*ith-3]] + v[na[i][4*ith-1]]);
 	}
 	return nnn;
@@ -97,7 +97,8 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 			Ediff = Ediff1 + Ediff2 * K;
 			if (Ediff <= 0) v[size * i + j] = -v[size * i + j];
 			else {
-				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), K)) v[size * i + j] = -v[size * i + j];
+				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), K)) 
+				{v[size * i + j] = -v[size * i + j];}
 			}
 		}
 	}
@@ -108,7 +109,8 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 			Ediff = Ediff1 + Ediff2 * K;
 			if (Ediff <= 0) v[size * i + j] = -v[size * i + j];
 			else {
-				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), K)) v[size * i + j] = -v[size * i + j];
+				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), K)) 
+				{v[size * i + j] = -v[size * i + j];}
 			}
 		}
 	}
@@ -119,7 +121,8 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 			Ediff = Ediff1 + Ediff2 * K;
 			if (Ediff <= 0) v[size * i + j] = -v[size * i + j];
 			else {
-				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), K)) v[size * i + j] = -v[size * i + j];
+				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), K)) 
+				{v[size * i + j] = -v[size * i + j];}
 			}
 		}
 	}
@@ -130,16 +133,18 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 			Ediff = Ediff1 + Ediff2 * K;
 			if (Ediff <= 0) v[size * i + j] = -v[size * i + j];
 			else {
-				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), K)) v[size * i + j] = -v[size * i + j];
+				if (dis(gen) <= exp_delU(Ediff1, expE)*pow(exp_delU(Ediff2, expE), K)) 
+				{v[size * i + j] = -v[size * i + j];}
 			}
 		}
 	}
+
 }
 void met_cycle(int size, double T, vector < vector <double> > na, double K, 
-vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
+vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn, int step2)
 {
-	int step1 = 2500, step2 = 10000;
-	int trash_step =  size;
+	int step1 = 2500;
+	int trash_step =  size*size/50;
 	if (T > 2.4 && T < 2.7) trash_step = trash_step * 2;
 
 	double expE[4] = { exp(-8 / T), exp(-4 / T), exp(4 / T), exp(8 / T) };
@@ -152,10 +157,10 @@ vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>&
 			MC_1step(array, size, &expE[0], na, K);
 		}
 		//magnet.at(k) = Magnet(array);
-		energy.at(k) = originalEnergy(array, size, na, K);
-		nn.at(k) = nnnEne(array, size, na, 1);
-		nnn.at(k) = nnnEne(array, size, na, 2);
-		nnnn.at(k) = nnnEne(array, size, na, 3);
+		energy.at(k) = originalEnergy(array, na, K);
+		nn.at(k) = nnnEne(array, na, 1);
+		nnn.at(k) = nnnEne(array, na, 2);
+		nnnn.at(k) = nnnEne(array, na, 3);
 	}
 }
 
@@ -163,26 +168,30 @@ int main()
 {
 	random_device rd;
 	gen.seed(rd);
-	double K = 0.2; double temp = 4.493;
-	int size = 10; int nth = 2; // 0 < nth <= 3
-
-	vector < vector <double> > near(size * size, vector<double>(12, 0));
-	neighbor(near, size);
-	vector<double> energy(10000, 0); 
-	vector<double> nn(10000,0);
-	vector<double> nnn(10000,0);
-	vector<double> nnnn(10000,0);
+	double K = 0.2; double Tc = 2.493; double temp;
+	int size = 10; int nth = 3; int step2 = 1024; // 0 < nth <= 3
 
 	clock_t start = clock();
 
+	vector < vector <double> > near(size * size, vector<double>(12, 0));
+	vector<double> energy(step2, 0); 
+	vector<double> nn(step2,0);
+	vector<double> nnn(step2,0);
+	vector<double> nnnn(step2,0);
+	neighbor(near, size);
+
 	ofstream Fileout;
-	Fileout.open("fileout_srch.txt");
-	cout << "Fileout open: " << temp << ", " << nth << endl;
-	Fileout << "nth temp ene nn nnn nnnn " << endl;
-	met_cycle(size, temp, near, K, energy, nn, nnn, nnnn);
-	for (int i = 0; i < 10000; i++){
-		Fileout << nth << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
+	Fileout.open("fileout_met.txt");
+	cout << "met open: " << step2 << ", " << nth << endl;
+	Fileout << "sizes nth step2 temp ene nn nnn nnnn " << endl;
+	for (int j = 0; j < 5; j++){
+		temp = (0.5 + 0.2*j) * Tc;
+		met_cycle(size, temp, near, K, energy, nn, nnn, nnnn, step2);
+		for (int i = 0; i < step2; i++){
+			Fileout << size << " " << nth << " " << step2 << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
+		}
 	}
+	
 	Fileout.close();
 
 	cout << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
