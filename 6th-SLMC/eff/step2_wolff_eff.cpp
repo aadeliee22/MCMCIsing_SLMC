@@ -116,11 +116,11 @@ class Cluster
 	vector<double> J_; 
 	vector < vector <double> > na_;
 };
-void wolff_cycle(int size, double T, 
+void wolff_cycle(int size, double T, int step2, int nth, 
 vector < vector <double> > na, double K, vector<double> J, double padd, 
-vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn, int nth)
+vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
 {
-	int step1 = 2500, step2 = 10000;
+	int step1 = 2500;
 	int scale=1; double Tstart = 2.3 * J[1], clsizef = 1.86 * J[1] * J[1] + 1;
 	double slope = (double(size)*size/clsizef)/(5-Tstart);
 	if (T>Tstart) { scale = slope * (T - Tstart); if (scale == 0) scale = 1; }
@@ -147,10 +147,11 @@ int main()
 {
 	random_device rd; gen.seed(rd);
 	double K = 0.2; double temp;
-	int nth; int size = 10; 
+	int nth; int size = 10; int step2;
 	//filein.txt format: nth \n temperature \n E0 \n J1 \n J2 \n J3
 	ifstream Filein; Filein.open("filein_eff.txt"); 
 	Filein >> nth; 
+	Filein >> step2;
 	Filein >> temp;
 	vector<double> J(4, 0);
 	for (int i = 0; i < nth + 1; i++){ Filein >> J[i]; }
@@ -158,21 +159,21 @@ int main()
 
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
 	neighbor(near, size);
-	vector<double> energy(10000, 0); 
-	vector<double> nn(10000,0);
-	vector<double> nnn(10000,0);
-	vector<double> nnnn(10000,0);
+	vector<double> energy(step2, 0); 
+	vector<double> nn(step2,0);
+	vector<double> nnn(step2,0);
+	vector<double> nnnn(step2,0);
 	double padd = 1 - exp(-2 * J[1] / temp);
 
 	clock_t start = clock();
 
 	ofstream Fileout; 
 	Fileout.open("fileout_eff.txt");
-	cout << "Fileout open: " << temp << ", " << nth << endl;
-	Fileout << "nth temp ene nn nnn nnnn " << endl;
-	wolff_cycle(size, temp, near, K, J, padd, energy, nn, nnn, nnnn, nth);
-	for (int i = 0; i < 10000; i++){
-		Fileout << nth << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
+	cout << "Fileout open: " << temp << ", " << nth << ", " << step2 << endl;
+	Fileout << "nth step2 temp ene nn nnn nnnn " << endl;
+	wolff_cycle(size, temp, step2, nth, near, K, J, padd, energy, nn, nnn, nnnn);
+	for (int i = 0; i < step2; i++){
+		Fileout << nth << " " << step2 << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
 	}
 	Fileout.close();
 

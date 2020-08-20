@@ -135,11 +135,11 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 		}
 	}
 }
-void met_cycle(int size, double T, vector < vector <double> > na, double K, 
+void met_cycle(int size, double T, int step2, vector < vector <double> > na, double K, 
 vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
 {
-	int step1 = 2500, step2 = 10000;
-	int trash_step =  size;
+	int step1 = 2500;
+	int trash_step =  size*size/50;
 	if (T > 2.4 && T < 2.7) trash_step = trash_step * 2;
 
 	double expE[4] = { exp(-8 / T), exp(-4 / T), exp(4 / T), exp(8 / T) };
@@ -164,24 +164,24 @@ int main()
 	random_device rd;
 	gen.seed(rd);
 	double K = 0.2; double temp = 4.493;
-	int size = 10; int nth = 2; // 0 < nth <= 3
-
-	vector < vector <double> > near(size * size, vector<double>(12, 0));
-	neighbor(near, size);
-	vector<double> energy(10000, 0); 
-	vector<double> nn(10000,0);
-	vector<double> nnn(10000,0);
-	vector<double> nnnn(10000,0);
+	int size = 10; int nth = 3; int step2 = 1024;
 
 	clock_t start = clock();
 
+	vector < vector <double> > near(size * size, vector<double>(12, 0));
+	vector<double> energy(step2, 0); 
+	vector<double> nn(step2,0);
+	vector<double> nnn(step2,0);
+	vector<double> nnnn(step2,0);
+	neighbor(near, size);
+
 	ofstream Fileout;
 	Fileout.open("fileout_srch.txt");
-	cout << "Fileout open: " << temp << ", " << nth << endl;
-	Fileout << "nth temp ene nn nnn nnnn " << endl;
-	met_cycle(size, temp, near, K, energy, nn, nnn, nnnn);
-	for (int i = 0; i < 10000; i++){
-		Fileout << nth << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
+	cout << "Fileout open: " << temp << ", " << nth << ", " << step2 << endl;
+	Fileout << "nth step2 temp ene nn nnn nnnn " << endl;
+	met_cycle(size, temp, step2, near, K, energy, nn, nnn, nnnn);
+	for (int i = 0; i < step2; i++){
+		Fileout << nth << " " << step2 << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
 	}
 	Fileout.close();
 

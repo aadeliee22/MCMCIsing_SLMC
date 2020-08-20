@@ -184,8 +184,8 @@ int main()
 	File.open("p10_e.txt");
 	cout << "File open: " << size << endl;
 	File << "sizes temp ene " << endl;
-	for (int k = 200; k < 700; k++) {
-		for (int h = 0; h < 20; h++) {
+	for (int k = 300; k < 700; k++) {
+		for (int h = 0; h < 25; h++) {
 			MC_1cycle(size, 0.005 * k, ene, near, K, step2);
 			File << size << " " << 0.005 * k << " " << ene << " " << endl;
 		}

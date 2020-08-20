@@ -38,10 +38,10 @@ void neighbor(vector < vector <double> >& na, int size)
 		na[i][11] = (i + 2) % size + (i / size) * size;
 	}
 }
-double Magnet(vector<double> v)
+double Magnet(vector<double> v, int size)
 {
 	double m = 0;
-	for (vector<int>::size_type i = 0; i < v.size(); i++) { m = m + v.at(i);}
+	for (int  i = 0; i < size*size; i++) { m = m + v.at(i);}
 	m = abs(m) / (v.size()); //absolute value of average spin
 	return m;
 }
@@ -114,12 +114,13 @@ class Cluster
 	vector<double> J_; 
 	vector < vector <double> > na_;
 };
-void wolff_cycle(int size, double T, int step2, int nth, 
-vector < vector <double> > na, double K, vector<double> J, vector<double> padd,
-vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
+void wolff_cycle(int size, double T, int nth, int step2, 
+vector < vector <double> > na, double K, vector<double> J, 
+vector<double> padd, double& ene, 
+double Tstart, double clsizef)
 {
 	int step1 = 2500;
-	int scale=1; double Tstart = 2.3 * J[1], clsizef = 1.86 * J[1] * J[1] + 1;
+	int scale=1; 
 	double slope = (double(size)*size/clsizef)/(5-Tstart);
 	if (T>Tstart) { scale = slope * (T - Tstart); if (scale == 0) scale = 1; }
 	int trash_step = scale*(sqrt(size));
@@ -128,54 +129,52 @@ vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>&
 	initialize(array, size);
 	Cluster c(na, J, K, padd, size, T, nth);
 
+	double Ene = 0;
 	for (int k = 0; k < step1*scale; k++) { gen.seed(rd); c.flip(array); }
 	for (int k = 0; k < step2; k++) {
-		for (int h = 0; h < trash_step; h++) {
-			gen.seed(rd); c.flip(array);
-		}
-		//magnet.at(k) = Magnet(array, size);
-		energy.at(k) = originalEnergy(array, size, na, K);
-		nn.at(k) = nnnEne(array, size, na, 1);
-		nnn.at(k) = nnnEne(array, size, na, 2);
-		nnnn.at(k) = nnnEne(array, size, na, 3);
+		for (int h = 0; h < trash_step; h++) {gen.seed(rd); c.flip(array);}
+		Ene = Ene + originalEnergy(array, size, na, K);
 	}
+	ene = Ene / step2;
 }
 int main()
 {
 	random_device rd; gen.seed(rd);
-	double K = 0.2; double temp;
-	int nth; int size = 10; int step2;
+	double K = 0.2;
+	int size = 10, step2, nth; 
+	double temp, ene;
+	vector<double> J(4, 0);
+	vector<double> padd(25, 0);
+	
 	//filein.txt format: nth \n temperature \n E0 \n J1 \n J2 \n J3
 	ifstream Filein; Filein.open("filein_srch.txt"); 
 	Filein >> nth; 
 	Filein >> step2;
 	Filein >> temp;
-	vector<double> J(4, 0);
 	for (int i = 0; i < nth + 1; i++){ Filein >> J[i]; }
-	temp = temp - 0.2;
 
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
 	neighbor(near, size);
-	vector<double> energy(step2, 0); 
-	vector<double> nn(step2,0);
-	vector<double> nnn(step2,0);
-	vector<double> nnnn(step2,0);
-	vector<double> padd(25, 0);
-	for (int i = 0; i < 5; i++){ 
-		for (int j = 0; j < 5; j++){ 
-			padd[5*i + j] = 1 - exp(-2 * (J[1] + i * J[2] + j * J[3]) / temp); 
-		}
-	}
-
+	double Tstart = 2.3 * J[1], clsizef = 1.86 * J[1] * J[1] + 1;
+	
 	clock_t start = clock();
 
 	ofstream Fileout; 
-	Fileout.open("fileout_srch.txt");
-	cout << "Fileout open: " << temp << ", " << nth << ", " << step2 << endl;
-	Fileout << "nth step2 temp ene nn nnn nnnn " << endl;
-	wolff_cycle(size, temp, step2, nth, near, K, J, padd, energy, nn, nnn, nnnn);
-	for (int i = 0; i < step2; i++){
-		Fileout << nth << " " << step2 << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
+	Fileout.open("ene_srch.txt");
+	cout << "plot open: " << nth << endl;
+	Fileout << "J: " << J[0] << " " << J[1] << " " << J[2] << " " << J[3] << " " << endl;
+	Fileout << "nth step2 temperature e " << endl;
+	for (int k = 300; k < 700; k++) {
+		temp = 0.005 * k;
+		for (int i = 0; i < 5; i++){ 
+			for (int j = 0; j < 5; j++){ 
+				padd[5*i + j] = 1 - exp(-2 * (J[1] + i * J[2] + j * J[3]) / temp); 
+			}
+		}	
+		for (int h = 0; h < 25; h++) {
+			wolff_cycle(size, temp, nth, step2, near, K, J, padd, ene, Tstart, clsizef);
+			Fileout << nth << " " << step2 << " " << temp << " " << ene << " " << endl;
+		}
 	}
 	Fileout.close();
 

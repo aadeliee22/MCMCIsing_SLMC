@@ -190,9 +190,9 @@ int main()
 	cout << "File open: " << endl;
 	Fileout << "J: " << J[0] << " " << J[1] << " " << J[2] << " " << J[3] << " " << endl;
 	Fileout << "sizes nth step2 temp ene " << endl;
-	for (int k = 200; k < 700; k++) {
+	for (int k = 300; k < 700; k++) {
 		temp = 0.005 * k;
-		for (int h = 0; h < 20; h++) {
+		for (int h = 0; h < 25; h++) {
 			met_cycle(size, temp, near, J, ene, nth, step2);
 			Fileout << size << " " << nth << " " << step2 << " " << temp << " " << ene << " " << endl;
 		}

@@ -140,8 +140,8 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 	}
 
 }
-void met_cycle(int size, double T, vector < vector <double> > na, double K, 
-vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn, int step2)
+void met_cycle(int size, double T, int step2, vector < vector <double> > na, double K, 
+vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
 {
 	int step1 = 2500;
 	int trash_step =  size*size/50;
@@ -186,7 +186,7 @@ int main()
 	Fileout << "sizes nth step2 temp ene nn nnn nnnn " << endl;
 	for (int j = 0; j < 5; j++){
 		temp = (0.5 + 0.2*j) * Tc;
-		met_cycle(size, temp, near, K, energy, nn, nnn, nnnn, step2);
+		met_cycle(size, temp, step2, near, K, energy, nn, nnn, nnnn);
 		for (int i = 0; i < step2; i++){
 			Fileout << size << " " << nth << " " << step2 << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
 		}
