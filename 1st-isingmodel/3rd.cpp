@@ -1,4 +1,4 @@
-/*#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <cmath>
 #include <random>
@@ -17,9 +17,9 @@ void initialize(vector<double>& v, int size) //initial -random- state
 			else v[size * i + j] = -1;
 		}
 	}
-	//for (int i = 0; i < size * size; i++) {
-	//	v[i] = dis(gen) < 0.5 ? 1 : -1;
-	//}
+	for (int i = 0; i < size * size; i++) {
+		v[i] = dis(gen) < 0.5 ? 1 : -1;
+	}
 }
 void color(vector<double>& v, int size) //graphing state
 {
@@ -129,7 +129,7 @@ void MC_1cycle(int size, double T, double& mag, double& ene, double& mag_sus, do
 	ene = Ene / step2;
 	mag_sus = pow(size, 2) * (Mag2 / step2 - pow(Mag / step2, 2)) / T;
 	sp_heat = (Ene2 / step2 - pow(Ene / step2, 2)) / pow(size * T, 2);
-	//return Mag, Ene, mag_sus, sp_heat;
+	return Mag, Ene, mag_sus, sp_heat;
 }
 void MC_1cycle_graphing(int size, double T, vector < vector <double> >& na)
 {
@@ -179,7 +179,7 @@ int main()
 	double temperature;
 
 	cout << "Size: "; cin >> size;
-	//cout << "Temperature: "; cin >> temperature;
+	cout << "Temperature: "; cin >> temperature;
 
 	vector < vector <double> > near(size * size, vector<double>(4, 0));
 	neighbor(near, size);
@@ -196,8 +196,8 @@ int main()
 	}
 	File.close();
 
-	//MC_1cycle_graphing(size, temperature, near);
+	MC_1cycle_graphing(size, temperature, near);
 
 	cout << endl << "total time: " << (double(clock()) - double(start)) / CLOCKS_PER_SEC << " sec" << endl;
 	return 0;
-}*/
+}
