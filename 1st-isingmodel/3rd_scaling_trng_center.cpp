@@ -21,9 +21,6 @@ void initialize(vector<double>& v, int size) //initial -random- state
 			else v[size * i + j] = -1;
 		}
 	}
-	/*for (int i = 0; i < size * size; i++) {
-		v[i] = dis(gen) < 0.5 ? 1 : -1;
-	}*/
 }
 void color(vector<double>& v, int size) //graphing state
 {
