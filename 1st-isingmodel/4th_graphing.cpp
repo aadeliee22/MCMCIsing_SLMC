@@ -109,7 +109,7 @@ int main()
 {
 	random_device rd;
 	gen.seed(rd);
-	int size=20;
+	int size=40;
 	double temp;
 	cout << "T: "; cin >> temp;
 	vector<double> array(size * size, 0);
