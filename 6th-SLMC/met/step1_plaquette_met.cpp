@@ -185,7 +185,7 @@ int main()
 	cout << "met open: " << step2 << ", " << nth << endl;
 	Fileout << "sizes nth step2 temp ene nn nnn nnnn " << endl;
 	for (int j = 0; j < 5; j++){
-		temp = (0.5 + 0.2*j) * Tc;
+		temp = (0.6 + 0.2*j) * Tc;
 		met_cycle(size, temp, step2, near, K, energy, nn, nnn, nnnn);
 		for (int i = 0; i < step2; i++){
 			Fileout << size << " " << nth << " " << step2 << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;

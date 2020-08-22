@@ -165,7 +165,7 @@ int main()
 	random_device rd;
 	gen.seed(rd);
 	double K = 0.2; double temp = 4.493;
-	int size = 10; int nth = 3; int step2 = 4096;
+	int size = 10; int nth = 1; int step2 = 4096;
 
 	clock_t start = clock();
 
