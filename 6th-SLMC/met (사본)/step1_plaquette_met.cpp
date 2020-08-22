@@ -169,7 +169,7 @@ int main()
 	random_device rd;
 	gen.seed(rd);
 	double K = 0.2; double Tc = 2.493; double temp;
-	int size = 10; int nth = 3; int step2 = 4096; // 0 < nth <= 3
+	int size = 10; int nth = 1; int step2 = 4096; // 0 < nth <= 3
 
 	clock_t start = clock();
 
