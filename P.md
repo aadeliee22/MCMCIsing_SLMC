@@ -11,9 +11,10 @@ where $<i,j>$ means the nearest neighbor in lattice site, and $s_i = \pm 1$.
 	This model is a simplest model of a magnet. $J$ indicates the interaction between nearest neighbors, it is ferromagnetic for $J>0$, and anti-ferromagnetic for $J<0$. ($B$ stands for external magnetic field, which I will set as $0$.) Ising model has a critical point (second-transition point), and I'm going to invest the thermal properties near the point.
 
  <figure> 
-     <img src="C:\Users\User\Desktop\mygit\others\graph40.png" alt="" style="zoom:110%;" align="center"/>
+     <img src="C:\Users\User\Desktop\mygit\MCM\pic\I_1.png" alt="" style="zoom:110%;" align="center"/>
      <figcaption><bold>Lattice size = 40</bold></figcaption>
  </figure>
+
 There exist some exact solution for 1 or 2-dimension lattice, however, I'm going to examine this model of finite size using Monte Carlo simulation by C++. 
 
 #### 2.  Self learning Monte Carlo method
@@ -318,9 +319,20 @@ The key point of this cluster formation is the consideration of 2nd-NN and 3rd-N
 
 To test these two methods, I performed cluster-formation of this two and compared to Metropolis algorithm, using below Hamiltonian. (Metropolis is always right.)
 $$
-\mathcal{H} = -\sum_{k=1}^3\sum_{\langle i,j\rangle_k}J_k s_is_j, \,\text{where } J_1 = 1, \, -0.1<J_2<0.1,\, -0.075<J_3<0.075
+\mathcal{H} = -\sum_{k=1}^2\sum_{\langle i,j\rangle_k}J_k s_is_j, \,\text{where } J_1 = 1, \, -0.15<J_2<0.15
 $$
 
+<figure> 
+     <img src="C:\Users\User\Desktop\mygit\MCM\pic\III_2.png" alt="" style="zoom:110%;" align="center"/>
+     <figcaption><bold>Comparison of method 2.1 and 2.2</bold></figcaption>
+ </figure>
+
+| $J_2$       | -0.15      | -0.05      | 0.05       | 0.15       |
+| ----------- | ---------- | ---------- | ---------- | ---------- |
+| method: 2.1 | 0.84273832 | 0.99276231 | 0.99497835 | 0.95549145 |
+| method: 2.2 | 0.99684442 | 0.99996033 | 0.99996566 | 0.99994447 |
+
+The above table shows the R$^2$ value. In this next-nearest-model, it is clear that method of changing acceptance ratio works better.
 
 # IV. Result & Discussion
 
