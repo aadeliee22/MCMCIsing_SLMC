@@ -10,10 +10,7 @@ $$
 where $<i,j>$ means the nearest neighbor in lattice site, and $s_i = \pm 1$. 
 	This model is a simplest model of a magnet. $J$ indicates the interaction between nearest neighbors, it is ferromagnetic for $J>0$, and anti-ferromagnetic for $J<0$. ($B$ stands for external magnetic field, which I will set as $0$.) Ising model has a critical point (second-transition point), and I'm going to invest the thermal properties near the point.
 
- <figure> 
-     <img src="C:\Users\User\Desktop\mygit\MCM\pic\I_1.png" alt="" style="zoom:110%;" align="center"/>
-     <figcaption><bold>Lattice size = 40</bold></figcaption>
- </figure>
+![](pic\I_1.png)
 
 There exist some exact solution for 1 or 2-dimension lattice, however, I'm going to examine this model of finite size using Monte Carlo simulation by C++. 
 
@@ -139,7 +136,7 @@ Moreover, if the distribution $p(x^{(k)}|x^{(0)})\to p^*(x)$ (invariant) when $k
 
 ### 3.2. Application: update
 
-In general, the transition operator from $a$ to $b$ is given by $T(a, b) = A(b, a)q(b|a)$.
+In general, the transition operator from $a$ to $b$ is given by $T(a\to b) = A(a\to b)q(b|a)$.
 
 #### 3.2.1. Local update: Metropolis-Hastings algorithm
 
@@ -147,7 +144,7 @@ We want to obtain $x^{(1)}\mapsto x^{(2)}\mapsto \cdots\mapsto x^{(m)}\cdots$. F
 
 ​	a. Propose $x^*\sim q(x^*|x^{(\tau)})$
 
-​	b. Accept $x^*$ with acceptance ratio $A(x^*, x^{(\tau)}) = \min\left(1, \frac{p(x^*)q(x^{(\tau)}|x^*)}{p(x^{(\tau)})q(x^*|x^{(\tau)})}\right)$
+​	b. Accept $x^*$ with acceptance ratio $A(x^{(\tau)}\to x^*) = \min\left(1, \frac{p(x^*)q(x^{(\tau)}|x^*)}{p(x^{(\tau)})q(x^*|x^{(\tau)})}\right)$
 
 ​	c. If accepted, $x^{(\tau+1)} = x^*$. Else, $x^{(\tau+1)} = x^{(\tau)}$.
 
@@ -305,27 +302,41 @@ Lastly, by derived effective Hamiltonian, we will compare this with original Ham
 1. Choose random site $i$. Select the nearest neighbor of $i$, call it $j$. 
 2. Search for 2nd-NN and 3rd-NN for $j$ , inside the cluster. If the number of 2nd-NN and 3rd-NN inside cluster is each denoted by $n_2, n_3$, then the probability of bonding the site is  $p = 1 - \exp(-2\beta (J_1+n_2J_2+n_3J_3))$.
 3. Repeat step 1 for site $j$, if it was in cluster. Keep until no more bond created.
-4. Flip the entire cluster.
+4. This cluster will be flipped by considering acceptance ratio of $A_s$ above.
 
-The key point of this cluster formation is the consideration of 2nd-NN and 3rd-NN inside bond-probability.
+The key point of this cluster formation is the consideration of 2nd-NN and 3rd-NN inside bond-probability. 
 
 ### 2.2. Change acceptance ratio of cluster flipping
 
-​	Second method is to change the acceptance ratio; form a cluster regarding to $J_1$ correlation, and accept/reject this cluster flip by considering $J_2, J_3$ correlation.
+​	Second method is to change the acceptance ratio; form a cluster regarding to $J_1$ correlation, and accept/reject this cluster flip by considering $J_2, J_3$ correlation. This method was inspired by the shift of acceptance ratio during self-learning.
+
+1. Construct Wolff-cluster using only information about 1st-NN, as formal. This step is identical with Wolff-cluster formation.
+
+2. Accept this cluster flip regarding given Hamiltonian, that includes 2nd-NN and 3rd-NN.
+   $$
+   A^*(a\to b) = \min\left(1, \frac{p(b)q(a|b)}{p(a)q(b|a)}\right) = \min\left(1, \frac{p(b)p_{J_1}(a)}{p(a)p_{J_1}(b)}\right) = \min(1, \exp(-\beta[(E_b-E_b^{J_1})-(E_a-E_a^{J_1})]))
+   $$
+   Where $E^{J_1}$ implies the effective energy calculated using only 1st-NN.
+
+   Actually, this step is similar to self-learning acceptance operator. 
+
+3. This cluster flip will again be accepted or rejected regarding $A_s$ above.
+
+For the overall acceptance ratio of cluster,
+$$
+A(a\to b) = \min\left(1, \frac{p(b)p_{eff}(a)}{p(a)p_{eff}(b)}\min\left(1, \frac{p_{eff}(b)p_{J_1}(a)}{p_{eff}(a)p_{J_1}(b)}\right)\right)
+$$
+where $p$ stands for original Hamiltonian that we are interested in, $p_{eff}$ for effective Hamiltonian, and $p_{J_1}$ for effective Hamiltonian of 1st-NN.
 
 
 
-
-
-To test these two methods, I performed cluster-formation of this two and compared to Metropolis algorithm, using below Hamiltonian. (Metropolis is always right.)
+​	To test these two methods, I performed cluster-formation of this two and compared to Metropolis algorithm, using below Hamiltonian. (Metropolis is always right.)
 $$
 \mathcal{H} = -\sum_{k=1}^2\sum_{\langle i,j\rangle_k}J_k s_is_j, \,\text{where } J_1 = 1, \, -0.15<J_2<0.15
 $$
+![](pic\III_2.png) 
 
-<figure> 
-     <img src="C:\Users\User\Desktop\mygit\MCM\pic\III_2.png" alt="" style="zoom:110%;" align="center"/>
-     <figcaption><bold>Comparison of method 2.1 and 2.2</bold></figcaption>
- </figure>
+​			*Comparison of metropolis update and cluster update using method 2.1 and 2.2*
 
 | $J_2$       | -0.15      | -0.05      | 0.05       | 0.15       |
 | ----------- | ---------- | ---------- | ---------- | ---------- |
@@ -338,19 +349,41 @@ The above table shows the R$^2$ value. In this next-nearest-model, it is clear t
 
 ## 1. Classical Ising model
 
-### 1.1. Comparison of Local & Global update
+To begin with, the classical Ising model of 
+$$
+H = -\sum_{<i,j>} s_is_j
+$$
+is used in this section. Furthermore, I'm going to compare the local and global update which was introduced before, and then examine some important quantities by various sizes. 
+
+### 1.1. Comparison of Local & Global update: $m, \chi$
+
+Local update was performed using Metropolis algorithm, and global update is Wolff cluster method. I'm going to calculate the accuracy of global update, and the efficiency compare to local update.
 
 #### 1.1.1. R square
 
+System size 16, 32, 48 was used to compare R square.
+
 #### 1.1.2. Integrated Autocorrelation time
+
+System size of 8, 16, 32, 64, 128 was used here to compare autocorrelation. Parameter of magnetization and magnetic susceptibility was used to calculate integrated autocorrelation time. 
+
+I'll start with magnetization autocorrelation time.
+
+![alt-text-1](pic\IV_1_1_2(1).png) ![alt-text-2](pic\IV_1_1_2(2).png)
+
+​	*Autocorrelation function: (left) Wolff cluster update (right) Metropolis update*
 
 ### 1.2. Comparison of Lattice size
 
+System size of 16, 32, 48, 64, 80 was used here for scaling.
+
 #### 1.2.1. Thermodynamic quantities
 
-#### 1.2.2. Binder cumulant
+Overall, magnetization was used here to calculate some quantities, such as magnetic susceptibility and Binder cumulant of magnetization.
 
-#### 1.2.3. Finite size scaling
+#### 1.2.2. Binder cumulant using $m$
+
+#### 1.2.3. Finite size scaling using $\chi$
 
 ## 2. Self Learning Monte Carlo method
 
@@ -358,7 +391,7 @@ The above table shows the R$^2$ value. In this next-nearest-model, it is clear t
 >
 > Compare effective Hamiltonian of n=1 and n=3.
 
-### 2.1. Consideration of NNN on formation of cluster
+### 2.1. Consideration of nth-NN on formation of cluster
 
 ### 2.2. Change acceptance ratio of cluster flipping
 
