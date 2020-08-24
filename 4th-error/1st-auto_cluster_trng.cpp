@@ -48,25 +48,26 @@ void Cluster_1step(vector<double>& v, int size, double padd, vector < vector <do
 {
 	gen.seed(rd);
 	int i = size * size * dis(gen);
-	vector<int> stack(1, i);
+	vector<int> stack(size*size, 0);
+	stack[0] = i;
 	double oldspin = v[i];
 	double newspin = -v[i];
 	v[i] = newspin;
-	int sp = 0;
+	int sp = 0, sh = 0;
 	while (1) {
-		if (v[na[i][0]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][0]); v[na[i][0]] = newspin; }
-		if (v[na[i][1]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][1]); v[na[i][1]] = newspin; }
-		if (v[na[i][2]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][2]); v[na[i][2]] = newspin; }
-		if (v[na[i][3]] == oldspin && dis(gen) < padd) { stack.push_back(na[i][3]); v[na[i][3]] = newspin; }
+		if (v[na[i][0]] == oldspin && dis(gen) < padd) { stack.at(sh) = na[i][0]; sh++; v[na[i][0]] = newspin; }
+		if (v[na[i][1]] == oldspin && dis(gen) < padd) { stack.at(sh) = na[i][1]; sh++; v[na[i][1]] = newspin; }
+		if (v[na[i][2]] == oldspin && dis(gen) < padd) { stack.at(sh) = na[i][2]; sh++; v[na[i][2]] = newspin; }
+		if (v[na[i][3]] == oldspin && dis(gen) < padd) { stack.at(sh) = na[i][3]; sh++; v[na[i][3]] = newspin; }
 		sp++;
-		if (sp >= stack.size()) break;
+		if (sp > sh) break;
 		i = stack.at(sp);
 	}
 
 }
 void MC_1cycle(int size, double T, vector < vector <double> >& na, vector<double>& magnet, vector<double>& magsus)
 {
-	int step1 = 5000, step2 = 10000;
+	int step1 = 2500, step2 = 10000;
 	int scale=1;
 	// double slope = (double(size)*size/3.0)/2.7;
 	// if (T>2.3) {
@@ -98,7 +99,7 @@ void MC_1cycle(int size, double T, vector < vector <double> >& na, vector<double
 double jack_error(int size, vector<double>& target)
 {
 	int Nall = target.size();
-	int binsize = 5 * pow(size, 0.5);
+	int binsize = 5 * sqrt(size) / 2;
 	int binnum = Nall / binsize;
 	double target_avg;
 	for (int i = 0; i < Nall; i++){ target_avg = target_avg + target.at(i); }
@@ -139,7 +140,7 @@ int main()
 	//cout << "(cluster) File open: " << size << endl;
 	File << "size temperature err_m err_ms" << endl;
 
-	for (int s = 2; s < 5; s++){
+	for (int s = 0; s < 5; s++){
 		size = 16 * (1 + s);
 		vector < vector <double> > near(size * size, vector<double>(4, 0));
 		vector<double> magnet(10000, 0); vector<double> magsus(10000,0);

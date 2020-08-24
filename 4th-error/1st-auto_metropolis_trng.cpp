@@ -92,9 +92,9 @@ void MC_1step(vector<double>& v, int size, double* expE, vector < vector <double
 	}
 
 }
-void MC_1cycle(int size, double T, vector < vector <double> >& na, vector<double>& magnet, vector<double>& magsus)
+void MC_1cycle(int size, double T, vector < vector <double> > na, vector<double>& magnet, vector<double>& magsus)
 {
-	int step1 = 5000, step2 = 100000;
+	int step1 = 2500, step2 = 20000;
 	// int trash_step = 5 + size;
 	// if (T > 2.0 && T < 2.5) trash_step = trash_step * 2;
 
@@ -115,10 +115,10 @@ void MC_1cycle(int size, double T, vector < vector <double> >& na, vector<double
 		magsus.at(k)=pow(size, 2) * pow(magnet.at(k)-magsum/step2, 2)/T;
 	}
 }
-double jack_error(int size, vector<double>& target)
+double jack_error(int size, vector<double> target)
 {
 	int Nall = target.size();
-	int binsize = 5 * pow(size, 0.5);
+	int binsize = size*size / 5;
 	int binnum = Nall / binsize;
 	double target_avg;
 	for (int i = 0; i < Nall; i++){ target_avg = target_avg + target.at(i); }
@@ -161,7 +161,7 @@ int main()
 	for (int s = 0; s < 5; s++){
 		size = 16 * (1 + s);
 		vector < vector <double> > near(size * size, vector<double>(4, 0));
-		vector<double> magnet(100000, 0); vector<double> magsus(100000,0);
+		vector<double> magnet(20000, 0); vector<double> magsus(20000,0);
 		neighbor(near, size);
 		for (int t = 2200; t < 2500; t++) {
 			for (int i=0;i<1;i++){
