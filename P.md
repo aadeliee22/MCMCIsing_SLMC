@@ -10,7 +10,7 @@ $$
 where $<i,j>$ means the nearest neighbor in lattice site, and $s_i = \pm 1$. 
 	This model is a simplest model of a magnet. $J$ indicates the interaction between nearest neighbors, it is ferromagnetic for $J>0$, and anti-ferromagnetic for $J<0$. ($B$ stands for external magnetic field, which I will set as $0$.) Ising model has a critical point (second-transition point), and I'm going to invest the thermal properties near the point.
 
-![Ising model with system size 40](pic\I_1.png)
+![Ising model with system size 40](./pic/I_1.png)
 
 There exist some exact solution for 1 or 2-dimension lattice, however, I'm going to examine this model of finite size using Monte Carlo simulation by C++. 
 
@@ -334,7 +334,7 @@ where $p$ stands for original Hamiltonian that we are interested in, $p_{eff}$ f
 $$
 \mathcal{H} = -\sum_{k=1}^2\sum_{\langle i,j\rangle_k}J_k s_is_j, \,\text{where } J_1 = 1, \, -0.15<J_2<0.15
 $$
-![test cluster update](pic\III_2.png) 
+![test cluster update](/pic/III_2.png) 
 
 ​			*Comparison of metropolis update and cluster update using method 2.1 and 2.2*
 
@@ -367,7 +367,7 @@ System size 16, 32, 48 was used to compare R square.
 
 ​										*Magnetization and Magnetic susceptibility comparison: (big) Metropolis (small) cluster*
 
-![IV_1_1_1~](.\pic\IV_1_1_1~.png)
+<img src="./pic/IV_1_1_1~.png" alt="IV_1_1_1~" style="zoom:120%;" />
 
 ​																			*(left) m(T) comparison (right) $\chi$(T) comparison*
 
