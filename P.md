@@ -10,7 +10,7 @@ $$
 where $<i,j>$ means the nearest neighbor in lattice site, and $s_i = \pm 1$. 
 	This model is a simplest model of a magnet. $J$ indicates the interaction between nearest neighbors, it is ferromagnetic for $J>0$, and anti-ferromagnetic for $J<0$. ($B$ stands for external magnetic field, which I will set as $0$.) Ising model has a critical point (second-transition point), and I'm going to invest the thermal properties near the point.
 
-![](pic\I_1.png)
+![Ising model with system size 40](pic\I_1.png)
 
 There exist some exact solution for 1 or 2-dimension lattice, however, I'm going to examine this model of finite size using Monte Carlo simulation by C++. 
 
@@ -334,7 +334,7 @@ where $p$ stands for original Hamiltonian that we are interested in, $p_{eff}$ f
 $$
 \mathcal{H} = -\sum_{k=1}^2\sum_{\langle i,j\rangle_k}J_k s_is_j, \,\text{where } J_1 = 1, \, -0.15<J_2<0.15
 $$
-![](pic\III_2.png) 
+![test cluster update](pic\III_2.png) 
 
 ​			*Comparison of metropolis update and cluster update using method 2.1 and 2.2*
 
@@ -363,7 +363,7 @@ Local update was performed using Metropolis algorithm, and global update is Wolf
 
 System size 16, 32, 48 was used to compare R square.
 
-![IV_1_1_1](pic\IV_1_1_1.png)
+![IV_1_1_1](./pic/IV_1_1_1.png)
 
 ​										*Magnetization and Magnetic susceptibility comparison: (big) Metropolis (small) cluster*
 
@@ -435,7 +435,7 @@ The vertical dashed line (--) represents the critical temperature, which is $T_c
 >
 > Compare effective Hamiltonian of n=1 and n=3.
 
-I'll mainly focus on plaquette-Ising model, which is
+​	I'll mainly perform on plaquette-Ising model, which is
 $$
 \mathcal{H} = -J\sum_{\langle i, j\rangle}s_is_j-K\sum_{ijkl\in\Box}s_is_js_ks_l
 $$
@@ -443,9 +443,11 @@ I'll focus on the case where $K/J = 0.2$. (Both positive and ferromagnetic)
 
 ![IV_2](pic\IV_2.png) 
 
-By performing Metropolis-Hastings algorithm on system size 10, 20 and 40, we could conclude that $T_c = 2.493$, demonstrated by the following paper.
+By performing Metropolis-Hastings algorithm on plaquette-Ising model of system size 10, 20 and 40, we could conclude that $T_c = 2.493$, demonstrated by the following paper.
 
 Moreover, by doing self-learning (actually, just energy fitting) of this plaquette Hamiltonian by effective Hamiltonian $\mathcal{H} = -\sum_{k=1}^{nth}\sum_{\langle i,j\rangle_k}J_k s_is_j$, I could decide whether considering 3rd-NN is better than 1st-NN during fitting.
+
+Below, 1024 & 2048 means the number of data that was used for one fitting.
 
 ![IV_2_2](pic\IV_2_2.png)
 
@@ -454,7 +456,7 @@ Moreover, by doing self-learning (actually, just energy fitting) of this plaquet
 | 1st-NN   | 0.9977622159345134 | 0.9979367589474513 |
 | 3rd-NN   | 0.997696360155469  | 0.9979543930109472 |
 
-It is true that considering 3rd-NN during fitting is more accurate, however, not quite efficient than considering 1st-NN.
+It is true that considering 3rd-NN during fitting is usually more accurate, however, it does not seem to have big difference. 
 
 ### 2.1. Consideration of nth-NN on formation of cluster
 
@@ -466,6 +468,11 @@ It is true that considering 3rd-NN during fitting is more accurate, however, not
 | -------- | ------------------ | ------------------ | ------------------ |
 | 1st-NN   | 0.9996268876183921 | 0.9997928031923388 | 0.9998775706675226 |
 | 3rd-NN   | 0.966586965517033  | 0.9691316899978449 | 0.9712051149363949 |
+
+| effective Hamiltonian | J1              | J2                | J3               |
+| --------------------- | --------------- | ----------------- | ---------------- |
+| 1st-NN                | 1.112$\pm$0.001 | .                 | .                |
+| 3rd-NN                | 1.221$\pm$0.003 | -0.0682$\pm$0.004 | -0.017$\pm$0.004 |
 
 
 
@@ -479,6 +486,11 @@ It is true that considering 3rd-NN during fitting is more accurate, however, not
 | -------- | ------------------ | ------------------ | ------------------ |
 | 1st-NN   | 0.9996497667105083 | 0.9997915851810159 | 0.9998742868415753 |
 | 3rd-NN   | 0.9980529594579894 | 0.9994300500264944 | 0.9996079715633984 |
+
+| effective Hamiltonian | J1                | J2            | J3               |
+| --------------------- | ----------------- | ------------- | ---------------- |
+| 1st-NN                | 1.1126$\pm$0.0006 | .             | .                |
+| 3rd-NN                | 1.26$\pm$0.02     | -0.1$\pm$0.01 | -0.009$\pm$0.004 |
 
 
 
