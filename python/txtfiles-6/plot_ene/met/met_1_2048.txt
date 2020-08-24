@@ -1,5 +1,5 @@
 J: 3.34245 1.1144 0 0 
-sizes nth step2 temp ene 
+sizes nth step2 temp e 
 10 1 2048 1.5 -216.694 
 10 1 2048 1.5 -216.8 
 10 1 2048 1.5 -216.913 

@@ -387,6 +387,16 @@ I'll start with magnetization autocorrelation time.
 
 ![IV_1_1_2(5)](pic\IV_1_1_2(5).png)Left graphs shows $\tau_{int}\sim L^z$. ($z = 0.44479$ for cluster, $z =  2.00119$ for metropolis.)
 
+#### 1.1.3. Error comparison
+
+![IV_1_1_3](C:\Users\User\Desktop\mygit\MCM\pic\IV_1_1_3.png)
+
+![IV_1_1_3~](C:\Users\User\Desktop\mygit\MCM\pic\IV_1_1_3~.png)
+
+​						*(left) Metropolis algorithm error (right) Cluster algorithm error*
+
+The blue dots represents the error calculated by jack knife, and orange dots are standard deviations. 
+
 ### 1.2. Comparison of Lattice size
 
 System size of 16, 32, 48, 64, 80 was used here for scaling.
@@ -395,9 +405,29 @@ System size of 16, 32, 48, 64, 80 was used here for scaling.
 
 Overall, magnetization was used here to calculate some quantities, such as magnetic susceptibility and Binder cumulant of magnetization.
 
+![IV_1_2_1](pic\IV_1_2_1.png)
+
+​						*(left) Magnetization by different size (center) Magnetic susceptibility (right) Magnetic susceptibility in log scale*
+
 #### 1.2.2. Binder cumulant using $m$
 
+![IV_1_2_2](pic\IV_1_2_2.png)
+
+The vertical dashed line (--) represents the critical temperature, which is $T_c = 2/\ln(1+\sqrt(2))\simeq 2.2692$
+
 #### 1.2.3. Finite size scaling using $\chi$
+
+![IV_1_2_3](C:\Users\User\Desktop\mygit\MCM\pic\IV_1_2_3.png)The value of maximum y position(red dashed line): $1.968705$
+
+![IV_1_2_3(1)](pic\IV_1_2_3(1).png)![IV_1_2_3(2)](pic\IV_1_2_3(2).png)
+
+(left) The plot shows the linear fitting curve, including 3~5 points.
+
+* include all points:  $2.053837x+2.268260$
+* exclude $L=16$:  $2.059052x+2.268162$
+* exclude $L=16, 32$:  $1.430204x+2.277027$
+
+(right) By considering some standard deviation and errors, we could conclude that the critical temperature is about $T_c = 2.268 \pm 0.004$. 
 
 ## 2. Self Learning Monte Carlo method
 
@@ -405,9 +435,52 @@ Overall, magnetization was used here to calculate some quantities, such as magne
 >
 > Compare effective Hamiltonian of n=1 and n=3.
 
+I'll mainly focus on plaquette-Ising model, which is
+$$
+\mathcal{H} = -J\sum_{\langle i, j\rangle}s_is_j-K\sum_{ijkl\in\Box}s_is_js_ks_l
+$$
+I'll focus on the case where $K/J = 0.2$. (Both positive and ferromagnetic)
+
+![IV_2](pic\IV_2.png) 
+
+By performing Metropolis-Hastings algorithm on system size 10, 20 and 40, we could conclude that $T_c = 2.493$, demonstrated by the following paper.
+
+Moreover, by doing self-learning (actually, just energy fitting) of this plaquette Hamiltonian by effective Hamiltonian $\mathcal{H} = -\sum_{k=1}^{nth}\sum_{\langle i,j\rangle_k}J_k s_is_j$, I could decide whether considering 3rd-NN is better than 1st-NN during fitting.
+
+![IV_2_2](pic\IV_2_2.png)
+
+| R square | $2^{10}$           | $2^{11}$           |
+| -------- | ------------------ | ------------------ |
+| 1st-NN   | 0.9977622159345134 | 0.9979367589474513 |
+| 3rd-NN   | 0.997696360155469  | 0.9979543930109472 |
+
+It is true that considering 3rd-NN during fitting is more accurate, however, not quite efficient than considering 1st-NN.
+
 ### 2.1. Consideration of nth-NN on formation of cluster
 
+![IV_2_2_1(1)](C:\Users\User\Desktop\mygit\MCM\pic\IV_2_2_1(1).png)
+
+![IV_2_2_1(2)](C:\Users\User\Desktop\mygit\MCM\pic\IV_2_2_1(2).png)
+
+| R square | $2^{10}$           | $2^{11}$           | $2^{12}$           |
+| -------- | ------------------ | ------------------ | ------------------ |
+| 1st-NN   | 0.9996268876183921 | 0.9997928031923388 | 0.9998775706675226 |
+| 3rd-NN   | 0.966586965517033  | 0.9691316899978449 | 0.9712051149363949 |
+
+
+
 ### 2.2. Change acceptance ratio of cluster flipping
+
+![IV_2_2_2(1)](pic\IV_2_2_2(1).png)
+
+![IV_2_2_2(2)](pic\IV_2_2_2(2).png)
+
+| R square | $2^{10}$           | $2^{11}$           | $2^{12}$           |
+| -------- | ------------------ | ------------------ | ------------------ |
+| 1st-NN   | 0.9996497667105083 | 0.9997915851810159 | 0.9998742868415753 |
+| 3rd-NN   | 0.9980529594579894 | 0.9994300500264944 | 0.9996079715633984 |
+
+
 
 # V. Conclusion
 
