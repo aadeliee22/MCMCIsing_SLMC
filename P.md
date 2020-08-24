@@ -367,7 +367,7 @@ System size 16, 32, 48 was used to compare R square.
 
 ​										*Magnetization and Magnetic susceptibility comparison: (big) Metropolis (small) cluster*
 
-<img src="./pic/IV_1_1_1~.png" alt="IV_1_1_1~" style="zoom:120%;" />
+![IV_1_1_1~](./pic/IV_1_1_1~.png)
 
 ​																			*(left) m(T) comparison (right) $\chi$(T) comparison*
 
@@ -377,7 +377,7 @@ System size of 8, 16, 32, 64, 128 was used here to compare autocorrelation. Para
 
 I'll start with magnetization autocorrelation time.
 
-![alt-text-1](pic\IV_1_1_2(2).png) ![alt-text-2](pic\IV_1_1_2(1).png)
+![alt-text-1](./pic/IV_1_1_2(2).png) ![alt-text-2](pic/IV_1_1_2(1).png)
 
 ​		*Autocorrelation function: (left) Metropolis update (right) Wolff cluster update*
 
