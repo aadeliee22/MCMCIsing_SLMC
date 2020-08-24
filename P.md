@@ -363,15 +363,29 @@ Local update was performed using Metropolis algorithm, and global update is Wolf
 
 System size 16, 32, 48 was used to compare R square.
 
+![IV_1_1_1](pic\IV_1_1_1.png)
+
+​										*Magnetization and Magnetic susceptibility comparison: (big) Metropolis (small) cluster*
+
+![IV_1_1_1~](pic\IV_1_1_1~.png)
+
+​																			*(left) m(T) comparison (right) $\chi$(T) comparison*
+
 #### 1.1.2. Integrated Autocorrelation time
 
 System size of 8, 16, 32, 64, 128 was used here to compare autocorrelation. Parameter of magnetization and magnetic susceptibility was used to calculate integrated autocorrelation time. 
 
 I'll start with magnetization autocorrelation time.
 
-![alt-text-1](pic\IV_1_1_2(1).png) ![alt-text-2](pic\IV_1_1_2(2).png)
+![alt-text-1](pic\IV_1_1_2(2).png) ![alt-text-2](pic\IV_1_1_2(1).png)
 
-​	*Autocorrelation function: (left) Wolff cluster update (right) Metropolis update*
+​		*Autocorrelation function: (left) Metropolis update (right) Wolff cluster update*
+
+![IV_1_1_2(4)](pic\IV_1_1_2(4).png) ![IV_1_1_2(3)](pic/IV_1_1_2(3).png)
+
+​		*Autocorrelation time: (left) Metropolis update (right) Wolff cluster update*
+
+![IV_1_1_2(5)](pic\IV_1_1_2(5).png)Left graphs shows $\tau_{int}\sim L^z$. ($z = 0.44479$ for cluster, $z =  2.00119$ for metropolis.)
 
 ### 1.2. Comparison of Lattice size
 
