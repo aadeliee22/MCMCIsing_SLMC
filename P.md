@@ -367,7 +367,7 @@ System size 16, 32, 48 was used to compare R square.
 
 ​										*Magnetization and Magnetic susceptibility comparison: (big) Metropolis (small) cluster*
 
-![IV_1_1_1~](pic\IV_1_1_1~.png)
+![IV_1_1_1~](.\pic\IV_1_1_1~.png)
 
 ​																			*(left) m(T) comparison (right) $\chi$(T) comparison*
 
