@@ -1,6 +1,7 @@
 # I. Introduction
 
-#### 1. Perform a Monte Carlo simulation on  [Ising model](https://en.wikipedia.org/wiki/Ising_model). 
+#### 1. Monte Carlo simulation on  [Ising model](https://en.wikipedia.org/wiki/Ising_model).
+
 > Here, I'll discuss about square lattice spin-1/2 simple classical Ising model.
 
 ​	For this Ising model, the energy configuration of state $\{s_i\}$ is given by Hamiltonian,  
@@ -15,6 +16,7 @@ where $<i,j>$ means the nearest neighbor in lattice site, and $s_i = \pm 1$.
 There exist some exact solution for 1 or 2-dimension lattice, however, I'm going to examine this model of finite size using Monte Carlo simulation by C++. 
 
 #### 2.  Self learning Monte Carlo method
+
 ​	For classical Ising model, there exist a global update (e.g. cluster update) that reduces auto-correlation time successfully. However, for other models, we can only apply local update, which is extremely slow near critical point. By SLMC, we can expect faster global update for any model given by Hamiltonian. 
 
 # II. Background
@@ -110,7 +112,7 @@ Large $\beta$ will cause 2 stable point of $\langle s\rangle\neq 0$ and 1 unstab
 
 ...
 
-## 3. Markov Chain Monte Carlo (MCMC)
+## 3. Markov Chain Monte Carlo
 
 Above, I explained that exact partition function is difficult to figure out, however, by statistical Monte Carlo simulations, solving these functions are available. Generally, we use **Markov chain**, which requires careful design. 
 
@@ -165,7 +167,7 @@ In our local update, proposal is given by $q(b|a) = \text{constant}$. I'll brief
 
 3. Calculate important thermodynamic quantities:
    * Before calculation, perform 2000~2500 MC-steps to obtain accurate value.
-   * Calculate magnetization and energy for 10000 times. For each data, throw a few steps according to the autocorrelation time. (e.g. Metropolis: $\theta \sim L^2$, Cluster: $\theta \sim L^{0.44}$)
+   * Calculate magnetization and energy for 10000 times. For each data, throw a few steps according to the autocorrelation time. (e.g. Metropolis: $\theta \sim L^2$, Cluster: $\theta \sim L^{0.44}$) Without this throwing process, we will experience certain bias of the observed value.
    * Calculate magnetization, magnetic susceptibility, energy, specific heat...etc.
 
 4. Do above steps for each temperature. Invest some quantities near critical point.
@@ -196,6 +198,27 @@ I'll introduce **Wolff-cluster update**, which has proposal $q(b|a)/q(a|b) \equi
 2. If $s_i =s_j$, bond to cluster with probability $p = 1-e^{-2\beta J}$.
 3. Repeat step 1 for site $j$, if it was in cluster. Keep until no more bond created.
 4. Flip the entire cluster.
+
+```c++
+// na_ = neighbor index array
+int i = size_*size_ * dis(gen);
+int sp = 0, sh = 0;
+double point;
+double prob = 1 - exp(-2*J/T);
+double oldspin = v_[i], newspin = -v_[i]; 
+vector<int> stack(size_*size_, 0);
+stack[0] = i; search[i] = 1; v_[i] = newspin;
+while (1) {
+	for (int k = 0; k < 4; k++){
+		point = na_[i][k];
+		if (v_[point] == oldspin && dis(gen) < prob) { 
+			sh++; 
+			stack.at(sh) = point;
+			v_[point] = newspin; 
+		}
+	}
+}
+```
 
 # III. Method
 
@@ -242,6 +265,8 @@ As system size goes to infinity, $B_L\to0$ for $T>T_c$  and $B_L\to2/3$ for $T<T
 3. For each block $i = 1, \cdots, k$, calculate $x^{(i)} = \frac{1}{k-1} \sum_{j\neq i} x_j$
 4. Estimate error: $\delta_x^2 = \frac{k-1}{k}\sum_{i=1}^k (x^{(i)}-\langle x\rangle)^2$
 
+In general, the error estimated from Jack knife method is larger than the normal error (standard deviation, usually.) Jack knife error usually $\tau_{int}$ times larger than the calculated error.
+
 ### 1.3. Autocorrelation time [^7]
 
 ​	The autocorrelation function is the correlation of some parameter $X$ with delayed-itself as function of time. 
@@ -260,7 +285,7 @@ By fast Fourier transformation (FFT), we can calculate integrated autocorrelatio
 
 1. Perform original local update using Metropolis-Hastings algorithm to make training data.
 
-   * The data contains energy of spin configuration, nearest-neighbor correlation, next-nearest-neighbor correlation, and third-nearest-neighbor correlation. 
+   * The data contains energy of spin configuration, nearest-neighbor correlation, next-nearest-neighbor correlation, and third-nearest-neighbor correlation. I'll also vary the number of data for training. ($2^{10}, 2^{11}, 2^{12}$)
 
 2. Learn effective Hamiltonian from this data: Using linear regression on energy and spin-correlations.
 
@@ -306,6 +331,30 @@ Lastly, by derived effective Hamiltonian, we will compare this with original Ham
 
 The key point of this cluster formation is the consideration of 2nd-NN and 3rd-NN inside bond-probability. 
 
+```c++
+// Front line same as Wolff cluster
+vector<int> search(size_*size_, 0);
+stack[0] = i; search[i] = 1;
+while (1) {
+	for (int k = 0; k < 4; k++){
+		p = na[i][k];
+		n2 = search[na[p][4]] + search[na[p][5]] + search[na[p][6]] + search[na[p][7]]; //J2
+		n3 = search[na[p][8]] + search[na[p][9]] + search[na[p][10]] + search[na[p][11]]; //J3
+		prob = padd_[5*n2+n3]; // Define probability before, and reference it.
+		if (prob>0){
+			if (v_[point] == oldspin && dis(gen) < prob) { 
+				sh++; 
+				stack.at(sh) = point; 
+                search[point] = 1; 
+                // 'search' array has value 1 at the location of cluster.
+				v[point] = newspin; 
+		}
+	}
+}
+/* ... : Accept this flip by considering Self-Learning acceptance operator. */
+//Finished.
+```
+
 ### 2.2. Change acceptance ratio of cluster flipping
 
 ​	Second method is to change the acceptance ratio; form a cluster regarding to $J_1$ correlation, and accept/reject this cluster flip by considering $J_2, J_3$ correlation. This method was inspired by the shift of acceptance ratio during self-learning.
@@ -328,9 +377,25 @@ A(a\to b) = \min\left(1, \frac{p(b)p_{eff}(a)}{p(a)p_{eff}(b)}\min\left(1, \frac
 $$
 where $p$ stands for original Hamiltonian that we are interested in, $p_{eff}$ for effective Hamiltonian, and $p_{J_1}$ for effective Hamiltonian of 1st-NN.
 
+```c++
+vector<double> v = array; // array: given spin configuration
+/* ... : Cluster formation on v */
+double ediff1, ediff2; // Two level operator
+ediff1 = ((eff_E(v, J, nth) - eff_E(v, J, 1)) 
+          - (eff_E(array, J, nth) - eff_E(array, J, 1))) / T; 
+// If cluster flip accepted by effective Hamiltonian, go to next step!
+if (ediff1 <= 0 || (dis(gen) < exp(-ediff1)) { 
+	ediff2 = (((original_E(v, K) - eff_E(v, J, nth)) 
+               - (original_E(array, K) - eff_E(array, J, nth))) / T;
+    // If cluster flip is accepted by original Hamiltonian, flip!
+	if (ediff2 <= 0 || (dis(gen) < exp(-ediff2)) { array = v; } 
+	}
+//Finished.
+```
 
 
-​	To test these two methods, I performed cluster-formation of this two and compared to Metropolis algorithm, using below Hamiltonian. (Metropolis is always right.)
+
+​	To test these two methods, I performed cluster-formation of this two and compared to Metropolis algorithm, using below Hamiltonian. (Because Metropolis algorithm can be applied to any model.)
 $$
 \mathcal{H} = -\sum_{k=1}^2\sum_{\langle i,j\rangle_k}J_k s_is_j, \,\text{where } J_1 = 1, \, -0.15<J_2<0.15
 $$
@@ -339,9 +404,11 @@ $$
 ​			*Comparison of metropolis update and cluster update using method 2.1 and 2.2*
 
 | $J_2$       | -0.15      | -0.05      | 0.05       | 0.15       |
-| ----------- | ---------- | ---------- | ---------- | ---------- |
+| ----------- | -- |--  |--  |--  |
 | method: 2.1 | 0.84273832 | 0.99276231 | 0.99497835 | 0.95549145 |
 | method: 2.2 | 0.99684442 | 0.99996033 | 0.99996566 | 0.99994447 |
+
+As $J_2$ diverges from $0$, method 2.1 also diverges from original value. This implies the detailed balance of this system has not been satisfied.
 
 The above table shows the R$^2$ value. In this next-nearest-model, it is clear that method of changing acceptance ratio works better.
 
@@ -349,15 +416,15 @@ The above table shows the R$^2$ value. In this next-nearest-model, it is clear t
 
 ## 1. Classical Ising model
 
-To begin with, the classical Ising model of 
+​	To begin with, the classical Ising model of 
 $$
 H = -\sum_{<i,j>} s_is_j
 $$
-is used in this section. Furthermore, I'm going to compare the local and global update which was introduced before, and then examine some important quantities by various sizes. 
+is used in this section. Furthermore, I'm going to compare the local and global update and examine some important quantities by different sizes. 
 
 ### 1.1. Comparison of Local & Global update: $m, \chi$
 
-Local update was performed using Metropolis algorithm, and global update is Wolff cluster method. I'm going to calculate the accuracy of global update, and the efficiency compare to local update.
+​	Local update was performed using Metropolis algorithm, and global update is Wolff cluster method. I'm going to calculate the accuracy of global update, and the efficiency compare to local update.
 
 #### 1.1.1. R square
 
@@ -365,37 +432,40 @@ System size 16, 32, 48 was used to compare R square.
 
 ![IV_1_1_1](./pic/IV_1_1_1.png)
 
-​										*Magnetization and Magnetic susceptibility comparison: (big) Metropolis (small) cluster*
+​																*Magnetization and Magnetic susceptibility comparison: (big) Metropolis (small) cluster*
 
 ![IV_1_1_1~](./pic/IV_1_1_1~.png)
 
-​																			*(left) m(T) comparison (right) $\chi$(T) comparison*
+​																									*(left) m(T) comparison (right) $\chi$(T) comparison*
 
-#### 1.1.2. Integrated Autocorrelation time
+We can conclude that Wolff cluster algorithm works just as well as Metropolis algorithm. By using Wolff cluster algorithm, we can obtain reliable results. 
 
-System size of 8, 16, 32, 64, 128 was used here to compare autocorrelation. Parameter of magnetization and magnetic susceptibility was used to calculate integrated autocorrelation time. 
-
-I'll start with magnetization autocorrelation time.
-
-![alt-text-1](./pic/IV_1_1_2(2).png) ![alt-text-2](pic/IV_1_1_2(1).png)
-
-​		*Autocorrelation function: (left) Metropolis update (right) Wolff cluster update*
-
-![IV_1_1_2(4)](pic/IV_1_1_2(4).png) ![IV_1_1_2(3)](pic/IV_1_1_2(3).png)
-
-​		*Autocorrelation time: (left) Metropolis update (right) Wolff cluster update*
-
-![IV_1_1_2(5)](pic/IV_1_1_2(5).png)Left graphs shows $\tau_{int}\sim L^z$. ($z = 0.44479$ for cluster, $z =  2.00119$ for metropolis.)
-
-#### 1.1.3. Error comparison
-
-![IV_1_1_3](pic/IV_1_1_3.png)
+#### 1.1.2. Error comparison
 
 ![IV_1_1_3~](pic/IV_1_1_3~.png)
 
-​						*(left) Metropolis algorithm error (right) Cluster algorithm error*
+The orange dots are error calculated from metropolis, and blue ones are error from cluster algorithm. There are clear relation between autocorrelation time and the error from jack knife; metropolis error was way bigger than cluster error, and also, error at critical point was largest among given temperature range. 
 
-The blue dots represents the error calculated by jack knife, and orange dots are standard deviations. 
+#### 1.1.3. Integrated Autocorrelation time
+
+​	System size of 8, 16, 32, 64, 128 was used here to compare autocorrelation. Parameter such as magnetization and magnetic susceptibility was used to calculate integrated autocorrelation time for each algorithms.
+
+Starting with with magnetization autocorrelation time,
+
+| Autocorrelation |              Metropolis              |               Cluster                |
+| :-------------: | :----------------------------------: | :----------------------------------: |
+|    function     | ![alt-text-1](./pic/IV_1_1_2(2).png) | ![alt-text-1](./pic/IV_1_1_2(1).png) |
+| integrated time | ![IV_1_1_2(4)](pic/IV_1_1_2(4).png)  | ![IV_1_1_2(3)](pic/IV_1_1_2(3).png)  |
+
+Below graphs shows $\tau_{int}\sim L^z$. ($z = 0.44479$ for cluster, $z =  2.00119$ for metropolis.)
+
+![IV_1_1_2(5)](pic/IV_1_1_2(5).png)
+
+​	Moreover, the integrated autocorrelation time for magnetic susceptibility. ($z = 0.33127$ for cluster, $z = 2.0587$ for metropolis.)
+
+![IV_1_1_2(10)](pic/IV_1_1_2(10).png)
+
+Apparently, cluster algorithm works much better than the Metropolis one. Autocorrelation time for Metropolis diverges faster. At system size $L=128$, it is terribly inefficient. As the cluster algorithm has less autocorrelation time, we can throw less steps to obtain results that we need. For this reasons, I'm going to use Wolff cluster method for investing Ising model's finite size effect.
 
 ### 1.2. Comparison of Lattice size
 
@@ -403,21 +473,25 @@ System size of 16, 32, 48, 64, 80 was used here for scaling.
 
 #### 1.2.1. Thermodynamic quantities
 
-Overall, magnetization was used here to calculate some quantities, such as magnetic susceptibility and Binder cumulant of magnetization.
+​	Overall, magnetization was used here to calculate some quantities, such as magnetic susceptibility and Binder cumulant of magnetization.
 
 ![IV_1_2_1](pic/IV_1_2_1.png)
 
 ​						*(left) Magnetization by different size (center) Magnetic susceptibility (right) Magnetic susceptibility in log scale*
 
+
+
 #### 1.2.2. Binder cumulant using $m$
 
 ![IV_1_2_2](pic/IV_1_2_2.png)
 
-The vertical dashed line (--) represents the critical temperature, which is $T_c = 2/\ln(1+\sqrt(2))\simeq 2.2692$
+The vertical dashed line (--) represents the critical temperature, which is $T_c = 2/\ln(1+\sqrt(2))\simeq2.2692$ 
 
 #### 1.2.3. Finite size scaling using $\chi$
 
-![IV_1_2_3](pic/IV_1_2_3.png)The value of maximum y position(red dashed line): $1.968705$
+![IV_1_2_3](pic/IV_1_2_3.png)
+
+​																		*The value of maximum y position(red dashed line): 1.968705*
 
 ![IV_1_2_3(1)](pic/IV_1_2_3(1).png)![IV_1_2_3(2)](pic/IV_1_2_3(2).png)
 
@@ -446,8 +520,6 @@ I'll focus on the case where $K/J = 0.2$. (Both positive and ferromagnetic)
 By performing Metropolis-Hastings algorithm on plaquette-Ising model of system size 10, 20 and 40, we could conclude that $T_c = 2.493$, demonstrated by the following paper.
 
 Moreover, by doing self-learning (actually, just energy fitting) of this plaquette Hamiltonian by effective Hamiltonian $\mathcal{H} = -\sum_{k=1}^{nth}\sum_{\langle i,j\rangle_k}J_k s_is_j$, I could decide whether considering 3rd-NN is better than 1st-NN during fitting.
-
-Below, 1024 & 2048 means the number of data that was used for one fitting.
 
 ![IV_2_2](pic/IV_2_2.png)
 
