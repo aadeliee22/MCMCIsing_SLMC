@@ -165,7 +165,7 @@ int main()
 	random_device rd;
 	gen.seed(rd);
 	double K = 0.2; double temp = 4.493;
-	int size = 16; int nth = 3; int step2 = 2048;
+	int size = 64; int nth = 3; int step2 = 2048;
 
 	clock_t start = clock();
 
@@ -178,7 +178,7 @@ int main()
 
 	ofstream Fileout;
 	Fileout.open("fileout_eff.txt");
-	cout << "Fileout open: " << temp << ", " << nth << ", " << step2 << endl;
+	cout << "Fileout open: " << temp << ", " << nth << ", " << size << endl;
 	Fileout << "s nth step2 temp ene nn nnn nnnn " << endl;
 	met_cycle(size, temp, step2, near, K, energy, nn, nnn, nnnn);
 	for (int i = 0; i < step2; i++){
