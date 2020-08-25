@@ -125,17 +125,14 @@ int& ac_1, int& ac_a)
 	Cluster c(na, J, K, padd, size, T, nth);
 
 	for (int k = 0; k < step1*scale; k++) { gen.seed(rd); c.flip(array, ac_1, ac_a); }
-	for (int k = 0; k < step2; k++) {
-		for (int h = 0; h < trash_step; h++) {
-			gen.seed(rd); c.flip(array, ac_1, ac_a);
-		}
-	}
+	ac_1 = 0; ac_a = 0;
+	for (int k = 0; k < step2; k++) { gen.seed(rd); c.flip(array, ac_1, ac_a); }
 }
 int main()
 {
 	random_device rd; gen.seed(rd);
 	double K = 0.2; double temp = 2.493;
-	int nth = 3; int size = 10; int step2 = 1024;
+	int nth = 1; int size = 128; int step2 = 512;
 	ifstream Filein; Filein.open("filein.txt");
 	vector<double> J(4, 0);
 	for (int i = 0; i < nth + 1; i++){ Filein >> J[i]; }
@@ -148,7 +145,7 @@ int main()
 
 	ofstream Fileout; 
 	Fileout.open("fileout_eff.txt");
-	cout << "Fileout open: " << nth << endl;
+	cout << "Fileout open: " << size<< " " <<nth << endl;
 	Fileout << "s nth step2 ac1 aca " << endl;
 	for (int i = 0; i < 3; i++){
 		int ac_1 = 0, ac_a = 0;
