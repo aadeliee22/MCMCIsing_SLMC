@@ -479,21 +479,25 @@ System size of 16, 32, 48, 64, 80 was used here for scaling.
 
 ​						*(left) Magnetization by different size (center) Magnetic susceptibility (right) Magnetic susceptibility in log scale*
 
-
+Obviously, as size increases, the more it acts like infinite size. Magnetization drops exponentially at critical point. Also does magnetic susceptibility-it diverges at critical point. However, we can figure out some subtle critical-temperature shift as varying system size. To accurately obtain critical point, we must perform some other analyzing. 
 
 #### 1.2.2. Binder cumulant using $m$
 
 ![IV_1_2_2](pic/IV_1_2_2.png)
 
-The vertical dashed line (--) represents the critical temperature, which is $T_c = 2/\ln(1+\sqrt(2))\simeq2.2692$ 
+The vertical dashed line (--) represents the critical temperature, which is $T_c = 2/\ln(1+\sqrt(2))\simeq2.2692$. At critical point, Binder value gathers at one point. 
 
 #### 1.2.3. Finite size scaling using $\chi$
 
 ![IV_1_2_3](pic/IV_1_2_3.png)
 
-​																		*The value of maximum y position(red dashed line): 1.968705*
+​																								*The value of maximum y position(red dashed line): 1.968705*
+
+The above result shows that well-known critical exponents of Ising model matches exactly with our model, which implies this simulation is successful. 
 
 ![IV_1_2_3(1)](pic/IV_1_2_3(1).png)![IV_1_2_3(2)](pic/IV_1_2_3(2).png)
+
+To obtain real critical temperature, we must do 'finite size scaling' from each pseudo-critical values.
 
 (left) The plot shows the linear fitting curve, including 3~5 points.
 
@@ -519,18 +523,20 @@ I'll focus on the case where $K/J = 0.2$. (Both positive and ferromagnetic)
 
 By performing Metropolis-Hastings algorithm on plaquette-Ising model of system size 10, 20 and 40, we could conclude that $T_c = 2.493$, demonstrated by the following paper.
 
-Moreover, by doing self-learning (actually, just energy fitting) of this plaquette Hamiltonian by effective Hamiltonian $\mathcal{H} = -\sum_{k=1}^{nth}\sum_{\langle i,j\rangle_k}J_k s_is_j$, I could decide whether considering 3rd-NN is better than 1st-NN during fitting.
+First, I have performed metropolis algorithm for fitting plaquette Hamiltonian (I'll call this *original Hamiltonian*) into effective Hamiltonian $\mathcal{H} = -\sum_{k=1}^{nth}\sum_{\langle i,j\rangle_k}J_k s_is_j$, varying the size of training data $2^{10}$~$2^{12}$. 
 
 ![IV_2_2](pic/IV_2_2.png)
 
-| R square | $2^{10}$           | $2^{11}$           |
-| -------- | ------------------ | ------------------ |
-| 1st-NN   | 0.9977622159345134 | 0.9979367589474513 |
-| 3rd-NN   | 0.997696360155469  | 0.9979543930109472 |
+| R square    | $2^{10}$           | $2^{11}$           | $2^{12}$ |
+| ----------- | ------------------ | ------------------ | -------- |
+| $J_1$       | 0.9977622159345134 | 0.9979367589474513 |          |
+| $J_1$~$J_3$ | 0.997696360155469  | 0.9979543930109472 |          |
 
-It is true that considering 3rd-NN during fitting is usually more accurate, however, it does not seem to have big difference. 
+It is true that considering 3rd-NN during fitting (i.e. fitting to $J_3$) is usually more accurate, however, it does not seem to have big difference. 
 
-### 2.1. Consideration of nth-NN on formation of cluster
+### 2.1. Compare Two methods:
+
+#### 2.1.1. Consideration of nth-NN on formation of cluster
 
 ![IV_2_2_1(1)](pic/IV_2_2_1(1).png)
 
@@ -546,9 +552,9 @@ It is true that considering 3rd-NN during fitting is usually more accurate, howe
 | 1st-NN                | 1.112$\pm$0.001 | .                 | .                |
 | 3rd-NN                | 1.221$\pm$0.003 | -0.0682$\pm$0.004 | -0.017$\pm$0.004 |
 
+Considering 2nd and 3rd-nearest neighbors while forming a cluster does not seem to ensure accurate result. It shows some deviation from original-metropolis method. 
 
-
-### 2.2. Change acceptance ratio of cluster flipping
+#### 2.1.2. Change acceptance ratio of cluster flipping
 
 ![IV_2_2_2(1)](pic/IV_2_2_2(1).png)
 
@@ -559,10 +565,20 @@ It is true that considering 3rd-NN during fitting is usually more accurate, howe
 | 1st-NN   | 0.9996497667105083 | 0.9997915851810159 | 0.9998742868415753 |
 | 3rd-NN   | 0.9980529594579894 | 0.9994300500264944 | 0.9996079715633984 |
 
-| effective Hamiltonian | J1                | J2            | J3               |
-| --------------------- | ----------------- | ------------- | ---------------- |
-| 1st-NN                | 1.1126$\pm$0.0006 | .             | .                |
-| 3rd-NN                | 1.26$\pm$0.02     | -0.1$\pm$0.01 | -0.009$\pm$0.004 |
+| effective Hamiltonian | J1                | J2               | J3               |
+| --------------------- | ----------------- | ---------------- | ---------------- |
+| 1st-NN                | 1.1126$\pm$0.0006 | .                | .                |
+| 3rd-NN                | 1.26$\pm$0.01     | -0.099$\pm$0.009 | -0.009$\pm$0.003 |
+
+Second method of forming a cluster are more accurate, and works well during fitting $J_3$. Overall, implementing method 2.2 into Self-Learning performs much better, so I'm going to choose this method for following analysis. 
+
+### 2.2. Analysis of this model
+
+#### 2.2.1. Invest Acceptance rate
+
+
+
+#### 2.2.2. Efficiency: Autocorrelation time
 
 
 
