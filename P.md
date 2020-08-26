@@ -519,13 +519,13 @@ $$
 $$
 I'll focus on the case where $K/J = 0.2$. (Both positive and ferromagnetic)
 
-![IV_2](pic/IV_2.png) 
+![IV_2](pic/IV_2(1).png) 
 
 By performing Metropolis-Hastings algorithm on plaquette-Ising model of system size 10, 20 and 40, we could conclude that $T_c = 2.493$, demonstrated by the following paper.
 
 First, I have performed metropolis algorithm for fitting plaquette Hamiltonian (I'll call this *original Hamiltonian*) into effective Hamiltonian $\mathcal{H} = -\sum_{k=1}^{nth}\sum_{\langle i,j\rangle_k}J_k s_is_j$, varying the size of training data $2^{10}$~$2^{12}$. 
 
-![IV_2_2](pic/IV_2_2.png)
+![IV_2_2](pic/IV_2(2).png)
 
 | R square    | $2^{10}$           | $2^{11}$           | $2^{12}$ |
 | ----------- | ------------------ | ------------------ | -------- |
@@ -538,9 +538,9 @@ It is true that considering 3rd-NN during fitting (i.e. fitting to $J_3$) is usu
 
 #### 2.1.1. Consideration of nth-NN on formation of cluster
 
-![IV_2_2_1(1)](pic/IV_2_2_1(1).png)
+![IV_2_2_1(1)](pic/IV_2_1_1(1).png)
 
-![IV_2_2_1(2)](pic/IV_2_2_1(2).png)
+![IV_2_2_1(2)](pic/IV_2_1_1(2).png)
 
 | R square | $2^{10}$           | $2^{11}$           | $2^{12}$           |
 | -------- | ------------------ | ------------------ | ------------------ |
@@ -556,9 +556,9 @@ Considering 2nd and 3rd-nearest neighbors while forming a cluster does not seem 
 
 #### 2.1.2. Change acceptance ratio of cluster flipping
 
-![IV_2_2_2(1)](pic/IV_2_2_2(1).png)
+![IV_2_2_2(1)](pic/IV_2_1_2(1).png)
 
-![IV_2_2_2(2)](pic/IV_2_2_2(2).png)
+![IV_2_2_2(2)](pic/IV_2_1_2(2).png)
 
 | R square | $2^{10}$           | $2^{11}$           | $2^{12}$           |
 | -------- | ------------------ | ------------------ | ------------------ |
@@ -574,9 +574,35 @@ Second method of forming a cluster are more accurate, and works well during fitt
 
 ### 2.2. Analysis of this model
 
+​	To understand the self-learning exactly, we must analyze its overall situation. First, I'll obtain the actual acceptance rate of this model, to compare two cases of effective Hamiltonian. Then, I'll calculate the integrated autocorrelation time for each case, and compare with original Metropolis method.
+
 #### 2.2.1. Invest Acceptance rate
 
+​	Knowing the acceptance rate of a model is important, since rejection-dominant model will not work efficiently. 
+$$
+A(a\to b) = \min\left(1, \frac{p(b)p_{eff}(a)}{p(a)p_{eff}(b)}\min\left(1, \frac{p_{eff}(b)p_{J_1}(a)}{p_{eff}(a)p_{J_1}(b)}\right)\right)
+$$
+To compare overall acceptance rate, I performed cluster formation by different sizes and different steps at critical temperature. Cluster was created based on the obtained values from self-learning linear regression.
 
+Below, I had compared the acceptance rate for two types of effective Hamiltonian, in various system size. (Consideration of only $J_1$ versus consideration up to $J_3$.) The leftmost plot shows the acceptance ratio of level 1, which is the '$J_1$-cluster flip based on effective Hamiltonian'. The center plot shows the acceptance ratio of level 2, which is the 'effective-cluster flip based on original Hamiltonian'. The rightmost plot shows the overall acceptance ratio. 
+
+Level-1 acceptance ratio is related with similarity of energy level of $J_1$ cluster and the effective Hamiltonian. (Actual flip happens here.)
+
+Level-2 acceptance ratio is related with 'how much the fitting was successful.' The closer the effective Hamiltonian with original Hamiltonian, the more it will become accepted.
+
+Overall acceptance ratio explains how successful was our cluster formation is. 
+
+![IV_2_2_1](pic/IV_2_2_1(1).png)
+
+Below figure shows the same result, however, x-axis scale for 'log'.
+
+![IV_2_2_1](pic/IV_2_2_1.png)
+
+Surprisingly, level-1 acceptance ratio dropped and elevated steadily for $J_3$ case. Moreover, for level-2 acceptance ratio, $J_1$ case also showed some unexpected increase. (There were no surprise on level-2 acceptance ratio of $J_3$ case.) Overall, both cases showed some unique pattern of acceptance ratio. 
+
+We could carefully suggest that this is related to the cluster's size. For small sized system, cluster size is also quite small, which makes more likely to be accepted by original Hamiltonian. For slightly larger system, it doesn't work well since the cluster size also gets big enough to be rejected. However, as the system gets large enough, cluster size doesn't seem to affect this acceptance rate. We might guess that cluster size is bounded anyway. 
+
+Another analysis is solely about level-2 acceptance rate. Clearly, $J_3$-effective Hamiltonian is more likely to be accepted than the $J_1$-effective Hamiltonian. We could simply claim that $J_3$ fitting is more accurate than $J_1$ fitting. However, total acceptance rate shows that $J_1$ fitting will actually work well during self-learning. We could probably guess that total acceptance rate of this two case will converge, or more, reversed when system size gets larger.
 
 #### 2.2.2. Efficiency: Autocorrelation time
 
