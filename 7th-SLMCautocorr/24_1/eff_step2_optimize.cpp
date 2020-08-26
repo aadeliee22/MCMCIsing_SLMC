@@ -73,7 +73,7 @@ class Cluster
 	Cluster(vector < vector <double> > na, vector<double> J, double K, double padd, 
 		int size, double T, int nth) 
 	{ size_ = size; na_ = na; padd_ = padd; J_ = J; K_ = K; T_ = T; nth_ = nth; }
-	void flip(vector<double>& array_, int& ac_1, int& ac_a)
+	void flip(vector<double>& array_)
 	{
 		vector<double> v = array_;
 		int i = size_*size_ * dis(gen);
@@ -94,13 +94,20 @@ class Cluster
 		ediff1 = (effEnergy(v, size_, na_, J_, nth_) - effEnergy(v, size_, na_, J_, 1)) 
 			- (effEnergy(array_, size_, na_, J_, nth_) - effEnergy(array_, size_, na_, J_, 1));
 		ediff1 = ediff1 / T_;
-		if ((ediff1 <= 0) || (dis(gen) < exp(-ediff1))) { 
-			ac_1++;
+		if (ediff1 <= 0) { 
 			ediff2 = (originalEnergy(v, size_, na_, K_) - effEnergy(v, size_, na_, J_, nth_)) 
 				- (originalEnergy(array_, size_, na_, K_) - effEnergy(array_, size_, na_, J_, nth_));
 			ediff2 = ediff2 / T_;
-			if ((ediff2 <= 0) || (dis(gen) < exp(-ediff2))) { ac_a++; array_ = v; }
+			if (ediff2 <= 0) { array_ = v; }
+			else {if (dis(gen) < exp(-ediff2)) { array_ = v; }}
 		}
+		else { if (dis(gen) < exp(-ediff1)) { 
+			ediff2 = (originalEnergy(v, size_, na_, K_) - effEnergy(v, size_, na_, J_, nth_)) 
+				- (originalEnergy(array_, size_, na_, K_) - effEnergy(array_, size_, na_, J_, nth_));
+			ediff2 = ediff2 / T_;
+			if (ediff2 <= 0) { array_ = v; }
+			else {if (dis(gen) < exp(-ediff2)) { array_ = v; }}
+		}}
 	}
 
 	private:
@@ -111,7 +118,7 @@ class Cluster
 };
 void wolff_cycle(int size, double T, int step2, int nth, 
 vector < vector <double> > na, double K, vector<double> J, double padd, 
-int& ac_1, int& ac_a)
+vector<double>& energy, vector<double>& nn, vector<double>& nnn, vector<double>& nnnn)
 {
 	int step1 = 2500;
 	int scale=1; double Tstart = 2.3 * J[1], clsizef = 1.86 * J[1] * J[1] + 1;
@@ -124,34 +131,50 @@ int& ac_1, int& ac_a)
 	initialize(array, size);
 	Cluster c(na, J, K, padd, size, T, nth);
 
-	for (int k = 0; k < step1*scale; k++) { gen.seed(rd); c.flip(array, ac_1, ac_a); }
-	ac_1 = 0; ac_a = 0;
-	for (int k = 0; k < step2; k++) { gen.seed(rd); c.flip(array, ac_1, ac_a); }
+	for (int k = 0; k < step1*scale; k++) { gen.seed(rd); c.flip(array); }
+	for (int k = 0; k < step2; k++) {
+		for (int h = 0; h < trash_step; h++) {
+			gen.seed(rd); c.flip(array);
+		}
+		//magnet.at(k) = Magnet(array, size);
+		energy.at(k) = originalEnergy(array, size, na, K);
+		nn.at(k) = nnnEne(array, size, na, 1);
+		nnn.at(k) = nnnEne(array, size, na, 2);
+		nnnn.at(k) = nnnEne(array, size, na, 3);
+	}
 }
 int main()
 {
 	random_device rd; gen.seed(rd);
-	double K = 0.2; double temp = 2.493;
-	int nth = 1; int size = 48; int step2 = 512;
-	ifstream Filein; Filein.open("filein.txt");
+	double K = 0.2; double temp;
+	int size, nth, step2;
+	//filein.txt format: nth \n temperature \n E0 \n J1 \n J2 \n J3
+	ifstream Filein; Filein.open("filein_eff.txt"); 
+	Filein >> size;
+	Filein >> nth; 
+	Filein >> step2;
+	Filein >> temp;
 	vector<double> J(4, 0);
 	for (int i = 0; i < nth + 1; i++){ Filein >> J[i]; }
-	double padd = 1 - exp(-2 * J[1] / temp);
+	temp = temp - 0.2;
 
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
 	neighbor(near, size);
+	vector<double> energy(step2, 0); 
+	vector<double> nn(step2,0);
+	vector<double> nnn(step2,0);
+	vector<double> nnnn(step2,0);
+	double padd = 1 - exp(-2 * J[1] / temp);
 
 	clock_t start = clock();
 
 	ofstream Fileout; 
 	Fileout.open("fileout_eff.txt");
-	cout << "Fileout open: " << size<< " " <<nth << endl;
-	Fileout << "s nth step2 ac1 aca " << endl;
-	for (int i = 0; i < 3; i++){
-		int ac_1 = 0, ac_a = 0;
-		step2 = step2 * 2;
-		wolff_cycle(size, temp, step2, nth, near, K, J, padd, ac_1, ac_a);
-		Fileout << size << " " << nth << " " << step2 << " " << ac_1 << " " << ac_a << endl;
+	cout << "Fileout open: " << temp << ", " << nth << ", " << step2 << endl;
+	Fileout << "s nth step2 temp ene nn nnn nnnn " << endl;
+	wolff_cycle(size, temp, step2, nth, near, K, J, padd, energy, nn, nnn, nnnn);
+	for (int i = 0; i < step2; i++){
+		Fileout << size << " " << nth << " " << step2 << " " << temp << " " << energy.at(i) << " " << nn.at(i) << " " << nnn.at(i) << " " << nnnn.at(i) << endl;
 	}
 	Fileout.close();
 

@@ -160,7 +160,7 @@ int main()
 	gen.seed(rd);
 	double K = 0.2; double temp = 2.493; 
 	int step2 = 100000;
-	int size = 8;
+	int size = 24;
 
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
 	vector<double> magnet(step2, 0); 
