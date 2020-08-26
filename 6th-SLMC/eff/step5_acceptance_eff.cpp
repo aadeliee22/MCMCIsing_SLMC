@@ -132,7 +132,7 @@ int main()
 {
 	random_device rd; gen.seed(rd);
 	double K = 0.2; double temp = 2.493;
-	int nth = 1; int size = 128; int step2 = 512;
+	int nth = 3; int size = 256; int step2 = 512;
 	ifstream Filein; Filein.open("filein.txt");
 	vector<double> J(4, 0);
 	for (int i = 0; i < nth + 1; i++){ Filein >> J[i]; }
