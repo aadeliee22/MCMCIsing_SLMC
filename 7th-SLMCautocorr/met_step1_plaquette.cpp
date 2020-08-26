@@ -159,7 +159,7 @@ int main()
 	random_device rd;
 	gen.seed(rd);
 	double K = 0.2; double temp = 2.493; 
-	int step2 = 100000;
+	int step2 = 50000;
 	int size = 24;
 
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
