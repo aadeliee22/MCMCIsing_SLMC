@@ -148,7 +148,7 @@ int main()
 	Filein >> temp;
 	for (int i = 0; i < nth + 1; i++){ Filein >> J[i]; }
 
-	step2 = 10000; temp = 2.493;
+	step2 = 50000; temp = 2.493;
 	vector<double> magnet(step2,0);
 
 	vector < vector <double> > near(size * size, vector<double>(12, 0));
