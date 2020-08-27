@@ -527,12 +527,12 @@ First, I have performed Metropolis algorithm for fitting plaquette Hamiltonian (
 
 ![IV_2_2](pic/IV_2(2).png)
 
-| R square    | $2^{10}$           | $2^{11}$           | $2^{12}$ |
-| ----------- | ------------------ | ------------------ | -------- |
-| $J_1$       | 0.9977622159345134 | 0.9979367589474513 |          |
-| $J_1$~$J_3$ | 0.997696360155469  | 0.9979543930109472 |          |
+| R square    | $2^{10}$           | $2^{11}$           | $2^{12}$           |
+| ----------- | ------------------ | ------------------ | ------------------ |
+| $J_1$       | 0.9977622159345134 | 0.9979367589474513 | 0.9980402045898196 |
+| $J_1$~$J_3$ | 0.997696360155469  | 0.9979543930109472 | 0.998002372508706  |
 
-Indeed, considering 3rd-NN during fitting (i.e. fitting to $J_3$) is usually more accurate, however, it does not seem to have big difference. Considering only $J_1$ in this case also works well.
+Obviously, using larger training data size ensures high accuracy of the effective Hamiltonian. Indeed, considering 3rd-NN during fitting (i.e. fitting to $J_3$) does not seem to have big difference with the 1st-NN consideration. Considering only $J_1$ in this case works pretty well.
 
 ### 2.1. Compare Two methods:
 
@@ -619,6 +619,10 @@ Overall, there seem to have some bounded limit for acceptance rate.
 > self-learning: By using the machine learning technique, we have mapped certain complex Ising model to simplest Ising model. So we could efficiently use global update on complex Ising model. This self-learning Monte Carlo method has increased efficiency, reduced autocorrelation, and prevent critical slow-down during performing complex system. Further, we could expand to other complex model. 
 >
 > fault: autocorrelation calculation takes tremendous time-have no time to calculate this variables on larger size. not yet implemented the method of restricting cluster size, which will possibly make more efficient. Have not tried to simulate using other models. not tried to change plaquette interaction $K$ (guess: as $K$ gets larger, self learning will not work well.)
+
+​	By conducting Monte Carlo method on the Ising model, we could receive a fundamental understanding of the thermodynamics phenomenon on the magnet. Thermodynamic quantities such as magnetization and magnetic susceptibility revealed the critical point of this model, by finite-size-scaling. Moreover, we could understand the basic rules of many-body interaction, and how we must design a Markov chain. Simulating this simple magnet model gave us some perception of the overall Monte Carlo method. Based on this method, two different update method was proposed. The efficiency of these two methods-local and global update-were calculated. Global update such as Wolff clustering method works much better than basic Metropolis update. Knowing this overall mechanism, we can now apply these methods to various situations.
+
+​	Self-learning Monte Carlo method also worked well during my research. By using the basics of machine learning techniques, we have mapped the complex system to the simplest Ising model. This mapping made us available to apply a global update on this complex system. This self-learning Monte Carlo method has increased efficiency by reducing autocorrelation and prevented critical slow-down during the performance of this complex system.
 
 
 
