@@ -320,11 +320,11 @@ Lastly, by derived effective Hamiltonian, we will compare this with the original
 
 
 
-​	To form a cluster considering only nearest-neighbor($J_1$) is simple, which is just a Wolff cluster method. However, to consider next-nearest-neighbors($J_2$) and third-nearest-neighbors($J_3$) is a complex problem. I've considered two methods to solve this problem.
+​	To form a cluster considering only nearest-neighbor($J_1$) is simple, which is just a Wolff cluster method. However, to consider higher order correlation such as next-nearest-neighbors($J_2$) and third-nearest-neighbors($J_3$) is a complex problem. I've considered two methods to solve this problem.
 
 ### 2.1. Consideration of nth-Nearest-Neighbor(nth-NN) during formation of cluster
 
-​	The first method is by including $J_2$ and $J_3$ correlation directly during the construction of the cluster. The brief scheme of this algorithm is to search the $J_2, J_3$ correlation inside the cluster. This method goes similar to Wolff cluster, however, in the interval, it considers 2nd-NN and 3rd-NN.  
+​	The first method is by including $J_2$ and $J_3$ correlation directly during the construction of the cluster. The brief scheme of this algorithm is to search the $J_2, J_3$ correlation inside the cluster. This method goes similar to Wolff cluster, however, in the interval, it calculates higher order correlation.
 
 1. Choose a random site $i$. Select the nearest neighbor of $i$, call it $j$. 
 2. Search for 2nd-NN and 3rd-NN for $j$ , inside the cluster. The number of 2nd-NN and 3rd-NN inside the cluster is each denoted by $n_2, n_3$. The probability to bond site $j$ is  $p = 1 - \exp(-2\beta (J_1+n_2J_2+n_3J_3))$.
@@ -521,7 +521,9 @@ I'll focus on the case where $K/J = 0.2$. (Both positive and ferromagnetic.)
 
 ![](pic/IV_2(1).png) 
 
-By performing Metropolis-Hastings algorithm on a plaquette-Ising model of system size 10, 20, and 40, we assume that $T_c = 2.493$, demonstrated by the following paper.
+![IV_2(1.5)](pic/IV_2(1.5).png)
+
+By performing Metropolis-Hastings algorithm on a plaquette-Ising model of system size 10, 20, and 40, we assume that $T_c = 2.503\pm0.006$, however, I'm going to use $T_c=2.493$ as introduced in this paper.
 
 First, I have performed Metropolis algorithm for fitting plaquette Hamiltonian (I'll call this *original Hamiltonian*) into effective Hamiltonian $\mathcal{H} = -\sum_{k=1}^{nth}\sum_{\langle i,j\rangle_k}J_k s_is_j$, differing the size of training data $2^{10}$~$2^{12}$. 
 
@@ -532,7 +534,7 @@ First, I have performed Metropolis algorithm for fitting plaquette Hamiltonian (
 | $J_1$       | 0.9977622159345134 | 0.9979367589474513 | 0.9980402045898196 |
 | $J_1$~$J_3$ | 0.997696360155469  | 0.9979543930109472 | 0.998002372508706  |
 
-Obviously, using larger training data size ensures high accuracy of the effective Hamiltonian. Indeed, considering 3rd-NN during fitting (i.e. fitting to $J_3$) does not seem to have big difference with the 1st-NN consideration. Considering only $J_1$ in this case works pretty well.
+Obviously, using larger training data size ensures high accuracy of the effective Hamiltonian. Indeed, considering 3rd-order correlation during fitting (i.e. fitting to $J_3$) does not seem to have big difference with the $J_1$ consideration. Considering only $J_1$ in this case will work well.
 
 ### 2.1. Compare Two methods:
 
@@ -552,7 +554,7 @@ Obviously, using larger training data size ensures high accuracy of the effectiv
 | 1st-NN                | 1.112$\pm$0.001 | .                 | .                |
 | 3rd-NN                | 1.221$\pm$0.003 | -0.0682$\pm$0.004 | -0.017$\pm$0.004 |
 
-Considering 2nd and 3rd-nearest neighbors while forming a cluster does not seem to ensure an accurate result. It shows some deviation from the original-metropolis method. 
+Considering 2nd and 3rd order spin correlation while forming a cluster does not seem to ensure an accurate result. It shows some deviation from the original-metropolis method. This cluster formation method in inappropriate in this case.
 
 #### 2.1.2. Change acceptance ratio of cluster flipping
 
@@ -570,7 +572,7 @@ Considering 2nd and 3rd-nearest neighbors while forming a cluster does not seem 
 | 1st-NN                | 1.1126$\pm$0.0006 | .                | .                |
 | 3rd-NN                | 1.26$\pm$0.01     | -0.099$\pm$0.009 | -0.009$\pm$0.003 |
 
-The second method of forming a cluster are more accurate and works well during fitting $J_3$. Overall, implementing method 2.2 into Self-Learning performs much better, so I'm going to choose this method for the following analysis. 
+The second method of forming a cluster are more accurate, and works well during fitting $J_3$. Overall, implementing method 2.2 into self-learning performs much better, so I'm going to choose this method for the following analysis. 
 
 ### 2.2. Analysis of this model
 
@@ -612,19 +614,15 @@ Overall, there seem to have some bounded limit for acceptance rate.
 
 # V. Conclusion
 
-> Ising model: fundamental understanding of thermodynamics phenomenon on magnet, understanding of many-body interaction. learn Monte Carlo method and its application to various situations. 
->
-> fault: code optimize not finished yet. Due to its delay of time, I could not perform this simulation on larger size. Finite size scaling might have some minor errors.
->
-> self-learning: By using the machine learning technique, we have mapped certain complex Ising model to simplest Ising model. So we could efficiently use global update on complex Ising model. This self-learning Monte Carlo method has increased efficiency, reduced autocorrelation, and prevent critical slow-down during performing complex system. Further, we could expand to other complex model. 
->
-> fault: autocorrelation calculation takes tremendous time-have no time to calculate this variables on larger size. not yet implemented the method of restricting cluster size, which will possibly make more efficient. Have not tried to simulate using other models. not tried to change plaquette interaction $K$ (guess: as $K$ gets larger, self learning will not work well.)
-
 ​	By conducting Monte Carlo method on the Ising model, we could receive a fundamental understanding of the thermodynamics phenomenon on the magnet. Thermodynamic quantities such as magnetization and magnetic susceptibility revealed the critical point of this model, by finite-size-scaling. Moreover, we could understand the basic rules of many-body interaction, and how we must design a Markov chain. Simulating this simple magnet model gave us some perception of the overall Monte Carlo method. Based on this method, two different update method was proposed. The efficiency of these two methods-local and global update-were calculated. Global update such as Wolff clustering method works much better than basic Metropolis update. Knowing this overall mechanism, we can now apply these methods to various situations.
 
-​	Self-learning Monte Carlo method also worked well during my research. By using the basics of machine learning techniques, we have mapped the complex system to the simplest Ising model. This mapping made us available to apply a global update on this complex system. This self-learning Monte Carlo method has increased efficiency by reducing autocorrelation and prevented critical slow-down during the performance of this complex system.
+​	To apply a similar Monte Carlo method to a more complex model, we have proposed a self-learning method. Self-learning Monte Carlo method was successful during the whole research. By using the basics of machine learning techniques, we have mapped the complex system to the simplest Ising model. This mapping made us available to apply a nice global update on this complex system. In this report, Ising model with plaquette interaction was used to evaluate the self-learning method. By using a two-level acceptance operator, we could successfully reconstruct this complex system into a simple, well-known Ising model. This self-learning Monte Carlo method has increased efficiency by reducing autocorrelation and prevented critical slow-down during the performance of this complex system. However, using high-order effective Hamiltonian does not ensure accuracy and efficiency. This phenomenon might involve the size of the cluster during the global update. In the middle-sized system, the acceptance rate diminishes, which causes large autocorrelation and inefficiency. This phenomenon usually occurs at high-order fitting. We could conclude that self-learning on the 1st-order spin correlation is appropriate. By using the self-learning Monte Carlo method, we can further expand our work to other models and compare their performances.
 
+​	Some issues need to be improved in this research. For the Ising model, simulation code optimization is not fully done yet. Due to its delay in time, I could not perform this simulation on a larger size system. As I only perform Monte Carlo method on system size up to 80, there exist some minor errors for finite-size scaling. As I soon optimize the Monte Carlo code, I can obtain the more exact value of the critical point. 
 
+For the self-learning Monte Carlo simulation, there are a few suggestions to improve this research. First, due to a huge time cost of calculating autocorrelation time, I had not much time to calculate it on the larger-sized system. However, based on the calculation of acceptance ratio on the larger size, we might suggest that integrated autocorrelation time will slowly increase at a large size. Moreover, I have not yet implemented a restricted-Wolff cluster update which was mentioned in the paper. According to this paper, we can increase the acceptance rate by restricting the size of the cluster. By implementing this method, we can expect to reduce autocorrelation on case with high-order spin correlation fitting. Furthermore, I have not tried to simulate self-learning method on other models, and also not tried to change plaquette interaction constant $K$.  We can probably guess that as $K$ gets bigger, then self-learning method will not work well as before.
+
+​	Self-learning Monte Carlo method can provide understanding of some complex, unknown model. By further study will lead us to improve both the accuracy and the efficiency of given simulation.
 
 
 # VI. Reference
