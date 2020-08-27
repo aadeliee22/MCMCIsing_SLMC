@@ -612,6 +612,14 @@ Overall, there seem to have some bounded limit for acceptance rate.
 
 ​	The paper demonstrates that the self-learning method is useful due to its efficiency and reduction in autocorrelation time. To check this fact, I calculated integrated autocorrelation time for various sizes; 8, 12, 16, 24, 32. There are two cases to compare: one is $J_1$-effective Hamiltonian, and the other is $J_3$-effective Hamiltonian. I would compare this result with the original Hamiltonian, which was performed using Metropolis algorithm. The calculation was held at the critical point.
 
+![IV_2_2_2(1)](pic/IV_2_2_2(1).png)
+
+![IV_2_2_2(2)](pic/IV_2_2_2(2).png)
+
+For $J_1$-fitting, the exponent $z = 1.07878$. For $J_3$-fitting, the exponent $z = 2.96047$. Compare to original metropolis exponent $z = 1.87278$, $J_3$ fitting has more autocorrelation. We can assume that due to its low acceptance rate, cluster formation was not fully reflected, which leads to huge autocorrelation time. However, the $J_1$-fitting showed great reduction on autocorrelation time. We can conclude that self-learning simulation on plaquette-Ising model is successful.
+
+It was surprising that original metropolis exponent didn't reach value $2$. I have only conducted this calculation on small-size systems ($L\leq 32$). This leads to major error in estimation of exponents. 
+
 # V. Conclusion
 
 ​	By conducting Monte Carlo method on the Ising model, we could receive a fundamental understanding of the thermodynamics phenomenon on the magnet. Thermodynamic quantities such as magnetization and magnetic susceptibility revealed the critical point of this model, by finite-size-scaling. Moreover, we could understand the basic rules of many-body interaction, and how we must design a Markov chain. Simulating this simple magnet model gave us some perception of the overall Monte Carlo method. Based on this method, two different update method was proposed. The efficiency of these two methods-local and global update-were calculated. Global update such as Wolff clustering method works much better than basic Metropolis update. Knowing this overall mechanism, we can now apply these methods to various situations.
