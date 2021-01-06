@@ -14,4 +14,5 @@ The data is made from c++ and analyzed (More precisely, 'plotted.') by python.
 6. Conduct self-learning Monte Carlo method on plaquette Hamiltonian.
 7. Calculate autocorrelation time.
 
+Every results is plotted in `python` folder.  
 For further explanation, read summary.md or summary.pdf.
