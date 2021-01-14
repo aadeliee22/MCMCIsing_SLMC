@@ -12,7 +12,7 @@ Monte Carlo Method in Ising model
 The data is made from C++ and analyzed by python.
 
 ### Self learning Monte Carlo method on 4-plaquette model.   
-(ref: <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.95.041101>)
 5. Check whether plaquette Hamiltonian works well. Also check the cluster update method considering higher order spin correlation.
 6. Conduct self-learning Monte Carlo method on plaquette Hamiltonian.
 7. Calculate autocorrelation time.
+(ref: <https://journals.aps.org/prb/abstract/10.1103/PhysRevB.95.041101>)
